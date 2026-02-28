@@ -477,8 +477,57 @@ function NoProjectView() {
     /* @__PURE__ */ jsx("p", { style: { color: "var(--text-secondary)", fontSize: 13 }, children: "Open a project in Ship Studio to use the GSD plugin." })
   ] });
 }
+function ConfirmDialog({ friction, targetLabel, onConfirm, onCancel, isDeleting }) {
+  const title = friction === "high" ? "Delete all plans?" : "Delete this item?";
+  const body = friction === "high" ? /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsx("strong", { children: targetLabel }),
+    " and all its contents will be permanently deleted. This cannot be undone. All phases, plans, research, and context will be lost."
+  ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsx("strong", { children: targetLabel }),
+    " will be permanently deleted. This cannot be undone."
+  ] });
+  return /* @__PURE__ */ jsxs("div", { className: "gsd-confirm-dialog", children: [
+    /* @__PURE__ */ jsx("div", { className: "gsd-confirm-title", children: title }),
+    /* @__PURE__ */ jsx("div", { className: "gsd-confirm-body", children: body }),
+    /* @__PURE__ */ jsxs("div", { className: "gsd-confirm-actions", children: [
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          className: "gsd-btn gsd-btn-secondary",
+          onClick: onCancel,
+          disabled: isDeleting,
+          children: "Cancel"
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          className: "gsd-btn gsd-btn-danger",
+          onClick: onConfirm,
+          disabled: isDeleting,
+          children: isDeleting ? "Deleting..." : "Delete"
+        }
+      )
+    ] })
+  ] });
+}
 function OverviewView({ gsd }) {
   const [expandedPhases, setExpandedPhases] = useState(/* @__PURE__ */ new Set());
+  const [confirmState, setConfirmState] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  async function handleConfirm() {
+    setIsDeleting(true);
+    try {
+      if ((confirmState == null ? void 0 : confirmState.type) === "full") {
+        await gsd.deleteDirectory();
+      } else if ((confirmState == null ? void 0 : confirmState.type) === "item") {
+        await gsd.deleteItem(confirmState.path);
+      }
+      setConfirmState(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
   function togglePhase(index) {
     const next = new Set(expandedPhases);
     if (next.has(index)) {
@@ -491,6 +540,18 @@ function OverviewView({ gsd }) {
   const totalPhases = gsd.planningData.length;
   const completedPhases = gsd.planningData.filter((p) => p.status === "complete").length;
   const progressPct = totalPhases > 0 ? Math.round(completedPhases / totalPhases * 100) : 0;
+  if (confirmState !== null) {
+    return /* @__PURE__ */ jsx(
+      ConfirmDialog,
+      {
+        friction: confirmState.type === "full" ? "high" : "low",
+        targetLabel: confirmState.type === "full" ? ".planning/" : confirmState.label,
+        onConfirm: handleConfirm,
+        onCancel: () => setConfirmState(null),
+        isDeleting
+      }
+    );
+  }
   return /* @__PURE__ */ jsxs("div", { children: [
     totalPhases > 0 && /* @__PURE__ */ jsxs("div", { children: [
       /* @__PURE__ */ jsxs("div", { className: "gsd-progress-label", children: [
@@ -542,11 +603,28 @@ function OverviewView({ gsd }) {
                 phase.plansComplete,
                 "/",
                 phase.plansTotal
-              ] })
+              ] }),
+              phase.dirName !== null && /* @__PURE__ */ jsx(
+                "button",
+                {
+                  className: "gsd-delete-btn",
+                  title: `Delete ${phase.dirName}`,
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    const dirName = phase.dirName;
+                    setConfirmState({
+                      type: "item",
+                      path: `.planning/phases/${dirName}`,
+                      label: dirName
+                    });
+                  },
+                  children: "Delete"
+                }
+              )
             ]
           }
         ),
-        isExpanded && /* @__PURE__ */ jsx("div", { className: "gsd-file-list", children: phase.dirName === null || phase.files.length === 0 ? /* @__PURE__ */ jsx("div", { className: "gsd-phase-plans", style: { padding: "4px 8px" }, children: "No files found" }) : phase.files.map((fileName) => /* @__PURE__ */ jsx(
+        isExpanded && /* @__PURE__ */ jsx("div", { className: "gsd-file-list", children: phase.dirName === null || phase.files.length === 0 ? /* @__PURE__ */ jsx("div", { className: "gsd-phase-plans", style: { padding: "4px 8px" }, children: "No files found" }) : phase.files.map((fileName) => /* @__PURE__ */ jsxs(
           "div",
           {
             className: "gsd-file-item",
@@ -554,12 +632,39 @@ function OverviewView({ gsd }) {
               `.planning/phases/${phase.dirName}/${fileName}`
             ),
             role: "button",
-            children: fileName
+            children: [
+              fileName,
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  className: "gsd-delete-btn",
+                  title: `Delete ${fileName}`,
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    setConfirmState({
+                      type: "item",
+                      path: `.planning/phases/${phase.dirName}/${fileName}`,
+                      label: fileName
+                    });
+                  },
+                  children: "Delete"
+                }
+              )
+            ]
           },
           fileName
         )) })
       ] }, phase.number);
-    })
+    }),
+    gsd.planningData.length > 0 && /* @__PURE__ */ jsx("div", { className: "gsd-delete-all-section", children: /* @__PURE__ */ jsx(
+      "button",
+      {
+        className: "gsd-btn gsd-btn-danger",
+        style: { fontSize: 12 },
+        onClick: () => setConfirmState({ type: "full" }),
+        children: "Delete all plans"
+      }
+    ) })
   ] });
 }
 function inlineMarkdown(text, baseKey) {

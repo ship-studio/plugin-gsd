@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { UseGsdReturn } from '../types';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface OverviewViewProps {
   gsd: UseGsdReturn;
@@ -14,6 +15,24 @@ interface OverviewViewProps {
  */
 export function OverviewView({ gsd }: OverviewViewProps) {
   const [expandedPhases, setExpandedPhases] = useState<Set<number>>(new Set());
+  const [confirmState, setConfirmState] = useState<
+    null | { type: 'full' } | { type: 'item'; path: string; label: string }
+  >(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  async function handleConfirm() {
+    setIsDeleting(true);
+    try {
+      if (confirmState?.type === 'full') {
+        await gsd.deleteDirectory();
+      } else if (confirmState?.type === 'item') {
+        await gsd.deleteItem(confirmState.path);
+      }
+      setConfirmState(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   function togglePhase(index: number) {
     const next = new Set(expandedPhases);
@@ -28,6 +47,18 @@ export function OverviewView({ gsd }: OverviewViewProps) {
   const totalPhases = gsd.planningData.length;
   const completedPhases = gsd.planningData.filter(p => p.status === 'complete').length;
   const progressPct = totalPhases > 0 ? Math.round((completedPhases / totalPhases) * 100) : 0;
+
+  if (confirmState !== null) {
+    return (
+      <ConfirmDialog
+        friction={confirmState.type === 'full' ? 'high' : 'low'}
+        targetLabel={confirmState.type === 'full' ? '.planning/' : confirmState.label}
+        onConfirm={handleConfirm}
+        onCancel={() => setConfirmState(null)}
+        isDeleting={isDeleting}
+      />
+    );
+  }
 
   return (
     <div>
@@ -96,6 +127,23 @@ export function OverviewView({ gsd }: OverviewViewProps) {
               <span className="gsd-phase-plans">
                 {phase.plansComplete}/{phase.plansTotal}
               </span>
+              {phase.dirName !== null && (
+                <button
+                  className="gsd-delete-btn"
+                  title={`Delete ${phase.dirName}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const dirName = phase.dirName as string;
+                    setConfirmState({
+                      type: 'item',
+                      path: `.planning/phases/${dirName}`,
+                      label: dirName,
+                    });
+                  }}
+                >
+                  Delete
+                </button>
+              )}
             </div>
 
             {/* Accordion body — file list */}
@@ -118,6 +166,20 @@ export function OverviewView({ gsd }: OverviewViewProps) {
                       role="button"
                     >
                       {fileName}
+                      <button
+                        className="gsd-delete-btn"
+                        title={`Delete ${fileName}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmState({
+                            type: 'item',
+                            path: `.planning/phases/${phase.dirName}/${fileName}`,
+                            label: fileName,
+                          });
+                        }}
+                      >
+                        Delete
+                      </button>
                     </div>
                   ))
                 )}
@@ -126,6 +188,19 @@ export function OverviewView({ gsd }: OverviewViewProps) {
           </div>
         );
       })}
+
+      {/* Delete all plans */}
+      {gsd.planningData.length > 0 && (
+        <div className="gsd-delete-all-section">
+          <button
+            className="gsd-btn gsd-btn-danger"
+            style={{ fontSize: 12 }}
+            onClick={() => setConfirmState({ type: 'full' })}
+          >
+            Delete all plans
+          </button>
+        </div>
+      )}
     </div>
   );
 }
