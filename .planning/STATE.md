@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 1 of 3 (Scaffold, Detection & Install)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-28 — Completed 01-01 (Project Scaffold)
+Last activity: 2026-02-28 — Completed 01-02 (useGsd Hook)
 
-Progress: [█░░░░░░░░░] 12%
+Progress: [██░░░░░░░░] 22%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 2
 - Average duration: 2 min
-- Total execution time: 0.03 hours
+- Total execution time: 0.05 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Scaffold, Detection & Install | 1 | 2 min | 2 min |
+| 1. Scaffold, Detection & Install | 2 | 3 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min)
+- Last 5 plans: 01-01 (2 min), 01-02 (1 min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -51,6 +51,9 @@ Recent decisions affecting current work:
 - [01-01]: dist/ excluded from .gitignore — Ship Studio clones repo and reads dist/index.js directly without building
 - [01-01]: Context uses __SHIPSTUDIO_PLUGIN_CONTEXT_REF__ (api_version 1), not deprecated __SHIPSTUDIO_PLUGIN_CONTEXT__
 - [01-01]: PluginPhase as 6-member discriminated union — each state maps to distinct view component
+- [01-02]: useRef pattern for shell/actions keeps detect() and install() stable without capturing stale context values
+- [01-02]: install() re-checks filesystem after openTerminal resolves — user may close terminal before completion
+- [01-02]: project===null guard before any shell.exec call — prevents runtime crash in TypeScript strict mode
 
 ### Pending Todos
 
@@ -64,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 01-01-PLAN.md (Project Scaffold)
+Stopped at: Completed 01-02-PLAN.md (useGsd Hook)
 Resume file: None
