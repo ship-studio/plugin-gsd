@@ -28,12 +28,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Clicking install opens an interactive terminal running `npx get-shit-done-cc@latest` with the user able to complete all prompts
   4. After the terminal closes, the plugin re-checks state and updates its view accordingly with a toast notification
   5. Shell command execution shows a loading indicator and file-read failures show a distinct error state with a message
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 01-01: Project scaffold — file structure, types.ts, context.ts, styles.ts, vite.config.ts
-- [ ] 01-02: Core hook and detection — useGsd() with three-state discriminated union and shell.exec detection chain
-- [ ] 01-03: Toolbar button, modal shell, and install view — entry point, modal, InstallView, toast/loading/error states
+- [ ] 01-01-PLAN.md -- Project scaffold: package.json, vite.config.ts, tsconfig.json, plugin.json, types.ts, context.ts, styles.ts
+- [ ] 01-02-PLAN.md -- Core hook and detection: useGsd() with detection chain, install action, loading/error state
+- [ ] 01-03-PLAN.md -- Toolbar button, modal, install view: entry point, modal shell, InstallView, NoProjectView, build dist/index.js
 
 ### Phase 2: Dashboard & File Reading
 **Goal**: Users can see an overview of their project's roadmap phases and read any .planning/ file in a drill-down panel, and learn the GSD workflow from a built-in guide
