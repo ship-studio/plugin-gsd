@@ -66,7 +66,7 @@ export const PLUGIN_CSS = `
 .gsd-phase-plans { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 
 /* Status badge */
-.gsd-status-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 0; flex-shrink: 0; letter-spacing: 0; }
+.gsd-status-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0; }
 .gsd-badge-complete { background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success); }
 .gsd-badge-in-progress { background: color-mix(in srgb, var(--action) 15%, transparent); color: var(--action); }
 .gsd-badge-not-started { background: var(--bg-tertiary); color: var(--text-muted); }
