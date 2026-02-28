@@ -19,9 +19,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Plan Dashboard
 
-- [ ] **DASH-01**: User sees an overview of roadmap phases with their names and statuses
+- [x] **DASH-01**: User sees an overview of roadmap phases with their names and statuses
 - [ ] **DASH-02**: User can click a phase or file to read its full contents in a scrollable panel
-- [ ] **DASH-03**: Dashboard refreshes plan data when the modal is opened
+- [x] **DASH-03**: Dashboard refreshes plan data when the modal is opened
 
 ### Plan Management
 
@@ -75,9 +75,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INST-05 | Phase 1 | Complete |
 | INST-06 | Phase 1 | Complete |
 | INST-07 | Phase 1 | Complete |
-| DASH-01 | Phase 2 | Pending |
+| DASH-01 | Phase 2 | Complete |
 | DASH-02 | Phase 2 | Pending |
-| DASH-03 | Phase 2 | Pending |
+| DASH-03 | Phase 2 | Complete |
 | EDUC-01 | Phase 2 | Pending |
 | EDUC-02 | Phase 2 | Pending |
 | MGMT-01 | Phase 3 | Pending |

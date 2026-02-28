@@ -48,7 +48,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Types, parseRoadmap utility, useGsd planning extension, OverviewView with accordion and progress bar
+- [x] 02-01-PLAN.md -- Types, parseRoadmap utility, useGsd planning extension, OverviewView with accordion and progress bar
 - [ ] 02-02-PLAN.md -- Lightweight markdown renderer, FileViewer with breadcrumb navigation and copy-path
 - [ ] 02-03-PLAN.md -- GuideView with click-to-copy commands, tab navigation, final wiring, build dist/index.js, human-verify
 
@@ -75,5 +75,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Scaffold, Detection & Install | 3/3 | Complete | 2026-02-28 |
-| 2. Dashboard & File Reading | 0/3 | Not started | - |
+| 2. Dashboard & File Reading | 1/3 | In Progress | - |
 | 3. Delete Flows & Polish | 0/2 | Not started | - |

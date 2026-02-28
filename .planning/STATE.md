@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Make GSD approachable — anyone using Ship Studio can install it, understand it, and manage their plans without ever reading a README or memorizing commands.
-**Current focus:** Phase 1 — Scaffold, Detection & Install
+**Current focus:** Phase 2 — Dashboard & File Reading
 
 ## Current Position
 
-Phase: 1 of 3 (Scaffold, Detection & Install) — COMPLETE
-Plan: 3 of 3 complete
-Status: Ready for Phase 2
-Last activity: 2026-02-28 — Phase 1 complete (human-verify Task 3 approved, all 10 steps passed)
+Phase: 2 of 3 (Dashboard & File Reading) — IN PROGRESS
+Plan: 1 of 3 complete
+Status: Plan 02-01 complete — ready for 02-02 (FileViewer)
+Last activity: 2026-02-28 — 02-01 complete (PhaseData, parseRoadmap, useGsd Phase 2 extension, OverviewView)
 
-Progress: [███░░░░░░░] 33% (Phase 1 complete, Phase 2 not started)
+Progress: [████░░░░░░] 40% (Phase 1 complete, Phase 2 plan 1/3 done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3 (Phase 1 complete — all plans and human verification passed)
+- Total plans completed: 4 (Phase 1 complete + Phase 2 plan 01-01)
 - Average duration: 2 min
-- Total execution time: 0.06 hours
+- Total execution time: 0.07 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Scaffold, Detection & Install | 3 | 5 min | 2 min |
+| 2. Dashboard & File Reading | 1 (of 3) | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 01-02 (1 min), 01-03 (2 min)
+- Last 5 plans: 01-01 (2 min), 01-02 (1 min), 01-03 (2 min), 02-01 (3 min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -57,6 +58,10 @@ Recent decisions affecting current work:
 - [01-03]: Fragment root in ToolbarButton avoids extra DOM wrapper around toolbar button and modal portal
 - [01-03]: redetect() called on every modal open — ensures fresh detection state, small UX cost, high correctness
 - [01-03]: useInjectStyles() checks STYLE_ID before inserting — idempotent CSS injection across hot reloads
+- [02-01]: loadPlanning() called from detect() after setPhase('has-planning') — single async chain, independent planningLoading state
+- [02-01]: fileReadIdRef race guard — increment on each readFile() call, discard results if requestId !== current
+- [02-01]: parseRoadmap combines phase bullets + progress table; status derived: checked->complete, unchecked+progress->in-progress, else not-started
+- [02-01]: Phase dir matching uses Math.floor(phase.number) to handle decimal phase numbers (2.1 -> dir "02-...")
 
 ### Pending Todos
 
@@ -64,11 +69,11 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Research]: ROADMAP.md and STATE.md file format parsing needs validation against real get-shit-done-cc output before finalizing the Phase 2 parser
+- [Research]: ROADMAP.md parsing validated against this project's own ROADMAP.md — format matched correctly
 - [Research]: openTerminal() Promise resolution on mid-install user close is inferred from Vercel plugin pattern; verify behavior at runtime
 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Phase 1 complete — ready to begin Phase 2 (Dashboard & File Reading)
+Stopped at: Completed 02-01-PLAN.md — PhaseData, parseRoadmap, useGsd Phase 2 extension, OverviewView
 Resume file: None
