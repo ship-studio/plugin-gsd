@@ -11,9 +11,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **INST-01**: User sees a GSD toolbar button consistent with Ship Studio conventions
 - [x] **INST-02**: Plugin detects whether GSD is installed by checking `~/.claude/get-shit-done/` existence
-- [ ] **INST-03**: User can install GSD via one-click button that opens interactive terminal running `npx get-shit-done-cc@latest`
+- [x] **INST-03**: User can install GSD via one-click button that opens interactive terminal running `npx get-shit-done-cc@latest`
 - [x] **INST-04**: Plugin detects whether current project has a `.planning/` directory
-- [ ] **INST-05**: User sees toast notifications for install success/failure and all significant actions
+- [x] **INST-05**: User sees toast notifications for install success/failure and all significant actions
 - [x] **INST-06**: User sees loading states during shell command execution
 - [x] **INST-07**: Plugin shows distinct error states for not-installed, no-project, and file-read failures
 
@@ -70,9 +70,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | INST-01 | Phase 1 | Complete |
 | INST-02 | Phase 1 | Complete |
-| INST-03 | Phase 1 | Pending |
+| INST-03 | Phase 1 | Complete |
 | INST-04 | Phase 1 | Complete |
-| INST-05 | Phase 1 | Pending |
+| INST-05 | Phase 1 | Complete |
 | INST-06 | Phase 1 | Complete |
 | INST-07 | Phase 1 | Complete |
 | DASH-01 | Phase 2 | Pending |

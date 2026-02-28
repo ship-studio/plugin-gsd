@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 1 of 3 (Scaffold, Detection & Install)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-02-28 — Completed 01-02 (useGsd Hook)
+Plan: 3 of 3 in current phase
+Status: Awaiting human verification (Task 3 checkpoint)
+Last activity: 2026-02-28 — Completed 01-03 Tasks 1-2 (UI Entry Point and Views)
 
-Progress: [██░░░░░░░░] 22%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3 (01-03 automated tasks complete, pending verification)
 - Average duration: 2 min
-- Total execution time: 0.05 hours
+- Total execution time: 0.06 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Scaffold, Detection & Install | 2 | 3 min | 2 min |
+| 1. Scaffold, Detection & Install | 3 | 5 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 01-02 (1 min)
+- Last 5 plans: 01-01 (2 min), 01-02 (1 min), 01-03 (2 min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -54,6 +54,9 @@ Recent decisions affecting current work:
 - [01-02]: useRef pattern for shell/actions keeps detect() and install() stable without capturing stale context values
 - [01-02]: install() re-checks filesystem after openTerminal resolves — user may close terminal before completion
 - [01-02]: project===null guard before any shell.exec call — prevents runtime crash in TypeScript strict mode
+- [01-03]: Fragment root in ToolbarButton avoids extra DOM wrapper around toolbar button and modal portal
+- [01-03]: redetect() called on every modal open — ensures fresh detection state, small UX cost, high correctness
+- [01-03]: useInjectStyles() checks STYLE_ID before inserting — idempotent CSS injection across hot reloads
 
 ### Pending Todos
 
@@ -67,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 01-02-PLAN.md (useGsd Hook)
+Stopped at: Checkpoint 01-03 Task 3 — human-verify plugin in Ship Studio (Tasks 1-2 committed)
 Resume file: None
