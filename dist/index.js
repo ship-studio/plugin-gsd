@@ -52,6 +52,27 @@ const PLUGIN_CSS = `
 .gsd-btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
 .gsd-loading-indicator { color: var(--text-muted); font-size: 12px; }
 .gsd-error-state { color: var(--error); font-size: 12px; padding: 8px; }
+
+/* Progress bar */
+.gsd-progress-bar { width: 100%; height: 6px; border-radius: 3px; background: var(--bg-tertiary); margin-bottom: 16px; overflow: hidden; }
+.gsd-progress-fill { height: 100%; border-radius: 3px; background: var(--action); transition: width 0.3s ease; }
+.gsd-progress-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+
+/* Phase rows */
+.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; cursor: pointer; border-bottom: 1px solid var(--border); }
+.gsd-phase-row:hover { background: var(--bg-secondary); margin: 0 -24px; padding: 8px 24px; }
+.gsd-phase-chevron { flex-shrink: 0; font-size: 10px; color: var(--text-muted); width: 14px; transition: transform 0.15s; }
+.gsd-phase-chevron-open { transform: rotate(90deg); }
+.gsd-phase-name { flex: 1; font-weight: 500; font-size: 13px; }
+.gsd-phase-plans { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+/* Status badge */
+.gsd-status-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+
+/* File list (accordion body) */
+.gsd-file-list { padding: 4px 0 4px 22px; }
+.gsd-file-item { display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-secondary); }
+.gsd-file-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
 `;
 const _w = window;
 function usePluginContext() {
@@ -74,6 +95,58 @@ function useProject() {
 function useAppActions() {
   return usePluginContext().actions;
 }
+function parseRoadmap(content) {
+  try {
+    if (!content || content.trim() === "") return [];
+    const bulletRegex = /^- \[([ x])\] \*\*Phase (\d+(?:\.\d+)?): ([^*]+)\*\*/gm;
+    const bullets = [];
+    let match;
+    while ((match = bulletRegex.exec(content)) !== null) {
+      bullets.push({
+        checked: match[1] === "x",
+        number: parseFloat(match[2]),
+        name: match[3].trim()
+      });
+    }
+    if (bullets.length === 0) return [];
+    const tableRegex = /^\|\s*(\d+(?:\.\d+)?)\.\s*[^|]+\|\s*(\d+)\/(\d+)\s*\|\s*([^|]+)\|/gm;
+    const tableData = /* @__PURE__ */ new Map();
+    while ((match = tableRegex.exec(content)) !== null) {
+      const num = parseFloat(match[1]);
+      tableData.set(num, {
+        plansComplete: parseInt(match[2], 10),
+        plansTotal: parseInt(match[3], 10)
+      });
+    }
+    const phases = bullets.map((bullet) => {
+      const table = tableData.get(bullet.number);
+      const plansComplete = (table == null ? void 0 : table.plansComplete) ?? 0;
+      const plansTotal = (table == null ? void 0 : table.plansTotal) ?? 0;
+      let status;
+      if (bullet.checked) {
+        status = "complete";
+      } else if (plansComplete > 0) {
+        status = "in-progress";
+      } else {
+        status = "not-started";
+      }
+      return {
+        number: bullet.number,
+        name: bullet.name,
+        status,
+        plansComplete,
+        plansTotal,
+        dirName: null,
+        // filled in by useGsd after filesystem scan
+        files: []
+        // filled in by useGsd after filesystem scan
+      };
+    });
+    return phases;
+  } catch {
+    return [];
+  }
+}
 function useGsd() {
   const project = useProject();
   const shell = useShell();
@@ -85,6 +158,53 @@ function useGsd() {
   const [phase, setPhase] = useState("loading");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [planningData, setPlanningData] = useState([]);
+  const [planningLoading, setPlanningLoading] = useState(false);
+  const [activeFile, setActiveFile] = useState(null);
+  const [fileContent, setFileContent] = useState(null);
+  const [fileLoading, setFileLoading] = useState(false);
+  const fileReadIdRef = useRef(0);
+  const loadPlanning = useCallback(async () => {
+    if (project === null) return;
+    setPlanningLoading(true);
+    try {
+      const roadmapResult = await shellRef.current.exec(
+        "bash",
+        ["-c", `cat "${project.path}/.planning/ROADMAP.md" 2>/dev/null`]
+      );
+      const phases = parseRoadmap(roadmapResult.stdout);
+      const dirsResult = await shellRef.current.exec(
+        "bash",
+        ["-c", `ls -1 "${project.path}/.planning/phases" 2>/dev/null || echo ""`]
+      );
+      const dirs = dirsResult.stdout.split("\n").map((d) => d.trim()).filter((d) => d.length > 0);
+      for (const dir of dirs) {
+        const dirMatch = dir.match(/^(\d+)-/);
+        if (!dirMatch) continue;
+        const dirPhaseNum = parseInt(dirMatch[1], 10);
+        const matchedPhase = phases.find(
+          (p) => Math.floor(p.number) === dirPhaseNum
+        );
+        if (matchedPhase) {
+          matchedPhase.dirName = dir;
+        }
+      }
+      for (const phase2 of phases) {
+        if (!phase2.dirName) continue;
+        const filesResult = await shellRef.current.exec(
+          "bash",
+          ["-c", `ls -1 "${project.path}/.planning/phases/${phase2.dirName}" 2>/dev/null || echo ""`]
+        );
+        const files = filesResult.stdout.split("\n").map((f) => f.trim()).filter((f) => f.endsWith(".md"));
+        phase2.files = files;
+      }
+      setPlanningData(phases);
+    } catch {
+      setPlanningData([]);
+    } finally {
+      setPlanningLoading(false);
+    }
+  }, [project]);
   const detect = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -110,6 +230,7 @@ function useGsd() {
         return;
       }
       setPhase("has-planning");
+      void loadPlanning();
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setError(message);
@@ -117,7 +238,7 @@ function useGsd() {
     } finally {
       setLoading(false);
     }
-  }, [project]);
+  }, [project, loadPlanning]);
   useEffect(() => {
     const run = async () => {
       await detect();
@@ -152,7 +273,58 @@ function useGsd() {
       setLoading(false);
     }
   }, [detect]);
-  return { phase, loading, error, install, redetect: detect };
+  const readFile = useCallback(async (relativePath) => {
+    if (project === null) return;
+    fileReadIdRef.current += 1;
+    const requestId = fileReadIdRef.current;
+    setFileLoading(true);
+    setActiveFile(null);
+    setFileContent(null);
+    try {
+      const result = await shellRef.current.exec(
+        "bash",
+        ["-c", `cat "${project.path}/${relativePath}" 2>/dev/null`],
+        { timeout: 1e4 }
+      );
+      if (requestId !== fileReadIdRef.current) return;
+      if (result.exit_code !== 0 || result.stdout.trim() === "") {
+        actionsRef.current.showToast("Could not read file", "error");
+        return;
+      }
+      setActiveFile(relativePath);
+      setFileContent(result.stdout);
+    } catch {
+      if (requestId !== fileReadIdRef.current) return;
+      actionsRef.current.showToast("Failed to read file", "error");
+    } finally {
+      if (requestId === fileReadIdRef.current) {
+        setFileLoading(false);
+      }
+    }
+  }, [project]);
+  const clearFileView = useCallback(() => {
+    setActiveFile(null);
+    setFileContent(null);
+  }, []);
+  return {
+    // Phase 1
+    phase,
+    loading,
+    error,
+    install,
+    redetect: detect,
+    // Phase 2: planning data
+    planningData,
+    planningLoading,
+    // Phase 2: file viewing
+    activeFile,
+    fileContent,
+    fileLoading,
+    readFile,
+    clearFileView,
+    // Phase 2: toast passthrough
+    showToast: actionsRef.current.showToast
+  };
 }
 function InstallView({ gsd }) {
   return /* @__PURE__ */ jsxs("div", { children: [

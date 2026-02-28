@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useProject, useShell, useAppActions } from './context';
-import type { PluginPhase, UseGsdReturn } from './types';
+import type { PhaseData, PluginPhase, UseGsdReturn } from './types';
+import { parseRoadmap } from './utils/parseRoadmap';
 
 /**
  * useGsd() -- core logic layer for the GSD plugin.
@@ -10,6 +11,7 @@ import type { PluginPhase, UseGsdReturn } from './types';
  *   2. GSD global install  -->  'gsd-not-installed'
  *   3. .planning/ present  -->  'no-planning' | 'has-planning'
  *
+ * Phase 2 extends this with planning data loading and file reading.
  * View components consume this hook's return value without making any shell
  * calls themselves.
  */
@@ -26,9 +28,90 @@ export function useGsd(): UseGsdReturn {
   const actionsRef   = useRef(actions);
   actionsRef.current = actions;
 
+  // Phase 1 state
   const [phase,   setPhase]   = useState<PluginPhase>('loading');
   const [loading, setLoading] = useState<boolean>(true);
   const [error,   setError]   = useState<string | null>(null);
+
+  // Phase 2: planning data state
+  const [planningData,    setPlanningData]    = useState<PhaseData[]>([]);
+  const [planningLoading, setPlanningLoading] = useState<boolean>(false);
+
+  // Phase 2: file viewing state
+  const [activeFile,  setActiveFile]  = useState<string | null>(null);
+  const [fileContent, setFileContent] = useState<string | null>(null);
+  const [fileLoading, setFileLoading] = useState<boolean>(false);
+
+  // Race condition guard for file reads: each request gets a unique ID,
+  // and results from stale requests are discarded.
+  const fileReadIdRef = useRef(0);
+
+  /**
+   * loadPlanning() -- read ROADMAP.md, parse phases, scan phase directories,
+   * and populate planningData. Called at end of detect() when phase is 'has-planning'.
+   *
+   * Manages its own planningLoading state independently of the main loading state.
+   */
+  const loadPlanning = useCallback(async (): Promise<void> => {
+    if (project === null) return;
+
+    setPlanningLoading(true);
+    try {
+      // Step 1: Read ROADMAP.md
+      const roadmapResult = await shellRef.current.exec(
+        'bash',
+        ['-c', `cat "${project.path}/.planning/ROADMAP.md" 2>/dev/null`],
+      );
+
+      // Step 2: Parse phase data from ROADMAP.md content
+      const phases = parseRoadmap(roadmapResult.stdout);
+
+      // Step 3: List phase directories
+      const dirsResult = await shellRef.current.exec(
+        'bash',
+        ['-c', `ls -1 "${project.path}/.planning/phases" 2>/dev/null || echo ""`],
+      );
+
+      const dirs = dirsResult.stdout
+        .split('\n')
+        .map(d => d.trim())
+        .filter(d => d.length > 0);
+
+      // Step 4: Match directories to phases by leading number
+      for (const dir of dirs) {
+        const dirMatch = dir.match(/^(\d+)-/);
+        if (!dirMatch) continue;
+        const dirPhaseNum = parseInt(dirMatch[1], 10);
+        const matchedPhase = phases.find(
+          p => Math.floor(p.number) === dirPhaseNum,
+        );
+        if (matchedPhase) {
+          matchedPhase.dirName = dir;
+        }
+      }
+
+      // Step 5: For each phase with a dirName, list its .md files
+      for (const phase of phases) {
+        if (!phase.dirName) continue;
+        const filesResult = await shellRef.current.exec(
+          'bash',
+          ['-c', `ls -1 "${project.path}/.planning/phases/${phase.dirName}" 2>/dev/null || echo ""`],
+        );
+        const files = filesResult.stdout
+          .split('\n')
+          .map(f => f.trim())
+          .filter(f => f.endsWith('.md'));
+        phase.files = files;
+      }
+
+      setPlanningData(phases);
+    } catch {
+      // Defensive: planning load errors are non-fatal
+      setPlanningData([]);
+    } finally {
+      setPlanningLoading(false);
+    }
+  }, [project]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * detect() -- run the full detection chain and update state.
@@ -74,6 +157,10 @@ export function useGsd(): UseGsdReturn {
 
       // All checks passed.
       setPhase('has-planning');
+
+      // Phase 2: Load planning data immediately after detecting has-planning.
+      // loadPlanning manages its own planningLoading state independently.
+      void loadPlanning();
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setError(message);
@@ -81,7 +168,7 @@ export function useGsd(): UseGsdReturn {
     } finally {
       setLoading(false);
     }
-  }, [project]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [project, loadPlanning]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Run detection on mount and whenever project changes.
@@ -138,5 +225,74 @@ export function useGsd(): UseGsdReturn {
     }
   }, [detect]);
 
-  return { phase, loading, error, install, redetect: detect };
+  /**
+   * readFile() -- read a file at the given relative path (relative to project root).
+   * Uses a request ID guard to discard stale results from concurrent reads.
+   */
+  const readFile = useCallback(async (relativePath: string): Promise<void> => {
+    if (project === null) return;
+
+    // Increment and capture request ID for stale-result detection
+    fileReadIdRef.current += 1;
+    const requestId = fileReadIdRef.current;
+
+    setFileLoading(true);
+    setActiveFile(null);
+    setFileContent(null);
+
+    try {
+      const result = await shellRef.current.exec(
+        'bash',
+        ['-c', `cat "${project.path}/${relativePath}" 2>/dev/null`],
+        { timeout: 10000 },
+      );
+
+      // Guard against stale request
+      if (requestId !== fileReadIdRef.current) return;
+
+      if (result.exit_code !== 0 || result.stdout.trim() === '') {
+        actionsRef.current.showToast('Could not read file', 'error');
+        return;
+      }
+
+      setActiveFile(relativePath);
+      setFileContent(result.stdout);
+    } catch {
+      if (requestId !== fileReadIdRef.current) return;
+      actionsRef.current.showToast('Failed to read file', 'error');
+    } finally {
+      // Only clear loading if this is still the active request
+      if (requestId === fileReadIdRef.current) {
+        setFileLoading(false);
+      }
+    }
+  }, [project]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /**
+   * clearFileView() -- reset file viewing state, returning to the overview.
+   */
+  const clearFileView = useCallback((): void => {
+    setActiveFile(null);
+    setFileContent(null);
+  }, []);
+
+  return {
+    // Phase 1
+    phase,
+    loading,
+    error,
+    install,
+    redetect: detect,
+    // Phase 2: planning data
+    planningData,
+    planningLoading,
+    // Phase 2: file viewing
+    activeFile,
+    fileContent,
+    fileLoading,
+    readFile,
+    clearFileView,
+    // Phase 2: toast passthrough
+    showToast: actionsRef.current.showToast,
+  };
 }

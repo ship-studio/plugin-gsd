@@ -51,4 +51,25 @@ export const PLUGIN_CSS = `
 .gsd-btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
 .gsd-loading-indicator { color: var(--text-muted); font-size: 12px; }
 .gsd-error-state { color: var(--error); font-size: 12px; padding: 8px; }
+
+/* Progress bar */
+.gsd-progress-bar { width: 100%; height: 6px; border-radius: 3px; background: var(--bg-tertiary); margin-bottom: 16px; overflow: hidden; }
+.gsd-progress-fill { height: 100%; border-radius: 3px; background: var(--action); transition: width 0.3s ease; }
+.gsd-progress-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+
+/* Phase rows */
+.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; cursor: pointer; border-bottom: 1px solid var(--border); }
+.gsd-phase-row:hover { background: var(--bg-secondary); margin: 0 -24px; padding: 8px 24px; }
+.gsd-phase-chevron { flex-shrink: 0; font-size: 10px; color: var(--text-muted); width: 14px; transition: transform 0.15s; }
+.gsd-phase-chevron-open { transform: rotate(90deg); }
+.gsd-phase-name { flex: 1; font-weight: 500; font-size: 13px; }
+.gsd-phase-plans { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+/* Status badge */
+.gsd-status-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+
+/* File list (accordion body) */
+.gsd-file-list { padding: 4px 0 4px 22px; }
+.gsd-file-item { display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-secondary); }
+.gsd-file-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
 `;
