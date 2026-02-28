@@ -10,11 +10,14 @@ import { GuideView } from './views/GuideView';
 
 function useInjectStyles() {
   useEffect(() => {
-    if (document.getElementById(STYLE_ID)) return;
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
+    let style = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+    if (!style) {
+      style = document.createElement('style');
+      style.id = STYLE_ID;
+      document.head.appendChild(style);
+    }
+    // Always update content — previous plugin version may have injected stale CSS.
     style.textContent = PLUGIN_CSS;
-    document.head.appendChild(style);
     return () => {
       document.getElementById(STYLE_ID)?.remove();
     };

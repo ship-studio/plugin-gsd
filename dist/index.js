@@ -426,6 +426,7 @@ function OverviewView({ gsd }) {
           {
             className: "gsd-phase-row",
             onClick: () => togglePhase(index),
+            style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 0", cursor: "pointer", borderBottom: "1px solid var(--border)" },
             role: "button",
             "aria-expanded": isExpanded,
             children: [
@@ -433,17 +434,18 @@ function OverviewView({ gsd }) {
                 "span",
                 {
                   className: `gsd-phase-chevron${isExpanded ? " gsd-phase-chevron-open" : ""}`,
+                  style: { flexShrink: 0, fontSize: 10, color: "var(--text-muted)", width: 14, transition: "transform 0.15s", transform: isExpanded ? "rotate(90deg)" : void 0 },
                   children: "▶"
                 }
               ),
-              /* @__PURE__ */ jsxs("span", { className: "gsd-phase-name", children: [
+              /* @__PURE__ */ jsxs("span", { style: { flex: 1, fontWeight: 500, fontSize: 13 }, children: [
                 "Phase ",
                 phase.number,
                 ": ",
                 phase.name
               ] }),
-              /* @__PURE__ */ jsx("span", { className: "gsd-status-badge", style: badgeStyle, children: badgeLabel }),
-              /* @__PURE__ */ jsxs("span", { className: "gsd-phase-plans", children: [
+              /* @__PURE__ */ jsx("span", { className: "gsd-status-badge", style: { ...badgeStyle, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 10, textTransform: "uppercase", letterSpacing: 0.5, flexShrink: 0 }, children: badgeLabel }),
+              /* @__PURE__ */ jsxs("span", { style: { fontSize: 11, color: "var(--text-muted)", flexShrink: 0 }, children: [
                 phase.plansComplete,
                 "/",
                 phase.plansTotal,
@@ -459,6 +461,7 @@ function OverviewView({ gsd }) {
             onClick: () => void gsd.readFile(
               `.planning/phases/${phase.dirName}/${fileName}`
             ),
+            style: { display: "flex", alignItems: "center", gap: 6, padding: "4px 8px", fontSize: 12, cursor: "pointer", borderRadius: 4, color: "var(--text-secondary)" },
             role: "button",
             children: [
               /* @__PURE__ */ jsx("span", { style: { fontSize: 11, color: "var(--text-muted)" }, children: "📄" }),
@@ -858,11 +861,13 @@ function GuideView({ showToast }) {
 }
 function useInjectStyles() {
   useEffect(() => {
-    if (document.getElementById(STYLE_ID)) return;
-    const style = document.createElement("style");
-    style.id = STYLE_ID;
+    let style = document.getElementById(STYLE_ID);
+    if (!style) {
+      style = document.createElement("style");
+      style.id = STYLE_ID;
+      document.head.appendChild(style);
+    }
     style.textContent = PLUGIN_CSS;
-    document.head.appendChild(style);
     return () => {
       var _a;
       (_a = document.getElementById(STYLE_ID)) == null ? void 0 : _a.remove();

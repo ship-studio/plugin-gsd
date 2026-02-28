@@ -82,21 +82,23 @@ export function OverviewView({ gsd }: OverviewViewProps) {
             <div
               className="gsd-phase-row"
               onClick={() => togglePhase(index)}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', cursor: 'pointer', borderBottom: '1px solid var(--border)' }}
               role="button"
               aria-expanded={isExpanded}
             >
               <span
                 className={`gsd-phase-chevron${isExpanded ? ' gsd-phase-chevron-open' : ''}`}
+                style={{ flexShrink: 0, fontSize: 10, color: 'var(--text-muted)', width: 14, transition: 'transform 0.15s', transform: isExpanded ? 'rotate(90deg)' : undefined }}
               >
                 &#9654;
               </span>
-              <span className="gsd-phase-name">
+              <span style={{ flex: 1, fontWeight: 500, fontSize: 13 }}>
                 Phase {phase.number}: {phase.name}
               </span>
-              <span className="gsd-status-badge" style={badgeStyle}>
+              <span className="gsd-status-badge" style={{ ...badgeStyle, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase' as const, letterSpacing: 0.5, flexShrink: 0 }}>
                 {badgeLabel}
               </span>
-              <span className="gsd-phase-plans">
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>
                 {phase.plansComplete}/{phase.plansTotal} plans
               </span>
             </div>
@@ -118,6 +120,7 @@ export function OverviewView({ gsd }: OverviewViewProps) {
                           `.planning/phases/${phase.dirName}/${fileName}`,
                         )
                       }
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 4, color: 'var(--text-secondary)' }}
                       role="button"
                     >
                       <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>&#128196;</span>
