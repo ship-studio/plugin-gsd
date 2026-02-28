@@ -58,7 +58,7 @@ export const PLUGIN_CSS = `
 .gsd-progress-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
 
 /* Phase rows */
-.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 4px; cursor: pointer; border-bottom: 1px solid var(--border); border-radius: 4px; transition: background 0.1s; }
+.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 8px; cursor: pointer; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; transition: background 0.1s; }
 .gsd-phase-row:hover { background: var(--bg-secondary); }
 .gsd-phase-chevron { flex-shrink: 0; font-size: 8px; color: var(--text-muted); width: 12px; transition: transform 0.15s; }
 .gsd-phase-chevron-open { transform: rotate(90deg); }
@@ -66,7 +66,7 @@ export const PLUGIN_CSS = `
 .gsd-phase-plans { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 
 /* Status badge */
-.gsd-status-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0; }
+.gsd-status-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 0; flex-shrink: 0; letter-spacing: 0; }
 .gsd-badge-complete { background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success); }
 .gsd-badge-in-progress { background: color-mix(in srgb, var(--action) 15%, transparent); color: var(--action); }
 .gsd-badge-not-started { background: var(--bg-tertiary); color: var(--text-muted); }
