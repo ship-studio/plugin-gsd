@@ -72,4 +72,11 @@ export const PLUGIN_CSS = `
 .gsd-file-list { padding: 4px 0 4px 22px; }
 .gsd-file-item { display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-secondary); }
 .gsd-file-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+/* File viewer */
+.gsd-file-viewer-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.gsd-file-viewer-breadcrumb { flex: 1; font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.gsd-file-viewer-copy { font-size: 11px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; }
+.gsd-file-viewer-copy:hover { color: var(--text-primary); }
+.gsd-file-viewer-content { font-size: 13px; line-height: 1.6; }
 `;
