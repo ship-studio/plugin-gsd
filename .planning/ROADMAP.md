@@ -13,7 +13,7 @@ Three phases that build from the inside out: first the scaffolding and install f
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Scaffold, Detection & Install** - Working plugin that detects GSD state and completes the install flow end-to-end
-- [ ] **Phase 2: Dashboard & File Reading** - Full read-only plan viewer with phase overview, file drill-down, and workflow guide
+- [x] **Phase 2: Dashboard & File Reading** - Full read-only plan viewer with phase overview, file drill-down, and workflow guide
 - [ ] **Phase 3: Delete Flows & Polish** - Safe destructive actions with confirmation dialogs and all v1 quality requirements
 
 ## Phase Details
@@ -50,7 +50,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md -- Types, parseRoadmap utility, useGsd planning extension, OverviewView with accordion and progress bar
 - [x] 02-02-PLAN.md -- Lightweight markdown renderer, FileViewer with breadcrumb navigation and copy-path
-- [ ] 02-03-PLAN.md -- GuideView with click-to-copy commands, tab navigation, final wiring, build dist/index.js, human-verify
+- [x] 02-03-PLAN.md -- GuideView with click-to-copy commands, tab navigation, final wiring, build dist/index.js, human-verify
 
 ### Phase 3: Delete Flows & Polish
 **Goal**: Users can safely delete their entire .planning/ directory or individual phase files, with confirmation dialogs that prevent accidental data loss
@@ -75,5 +75,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Scaffold, Detection & Install | 3/3 | Complete | 2026-02-28 |
-| 2. Dashboard & File Reading | 2/3 | In Progress | - |
+| 2. Dashboard & File Reading | 3/3 | Complete | 2026-02-28 |
 | 3. Delete Flows & Polish | 0/2 | Not started | - |

@@ -5,34 +5,30 @@
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Make GSD approachable — anyone using Ship Studio can install it, understand it, and manage their plans without ever reading a README or memorizing commands.
-**Current focus:** Phase 2 — Dashboard & File Reading
+**Current focus:** Phase 3 — Delete Flows & Polish
 
 ## Current Position
 
-Phase: 2 of 3 (Dashboard & File Reading) — IN PROGRESS
-Plan: 2 of 3 complete
-Status: Plan 02-02 complete — ready for 02-03 (GuideView + tab wiring)
-Last activity: 2026-02-28 — 02-02 complete (renderMarkdown, FileViewer, file viewer CSS)
+Phase: 2 of 3 complete — ready for Phase 3 (Delete Flows & Polish)
+Plan: Phase 2 complete (3/3), Phase 3 not yet planned
+Status: Phase 2 verified and complete — ready for Phase 3 planning
+Last activity: 2026-02-28 — Phase 2 complete (JSX runtime fix, CSS polish, human-verified)
 
-Progress: [█████░░░░░] 50% (Phase 1 complete, Phase 2 plan 2/3 done)
+Progress: [██████░░░░] 67% (Phases 1-2 complete, Phase 3 remaining)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5 (Phase 1 complete + Phase 2 plans 01-02)
+- Total plans completed: 6 (Phase 1: 3 + Phase 2: 3)
 - Average duration: 2 min
-- Total execution time: 0.1 hours
+- Total execution time: ~0.2 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Scaffold, Detection & Install | 3 | 5 min | 2 min |
-| 2. Dashboard & File Reading | 2 (of 3) | 6 min | 3 min |
-
-**Recent Trend:**
-- Last 5 plans: 01-02 (1 min), 01-03 (2 min), 02-01 (3 min), 02-02 (3 min)
-- Trend: -
+| 2. Dashboard & File Reading | 3 | multi-session | - |
 
 *Updated after each plan completion*
 
@@ -65,6 +61,10 @@ Recent decisions affecting current work:
 - [02-02]: renderMarkdown uses while loop (not forEach/map) to allow fenced code blocks to consume multiple lines per iteration
 - [02-02]: inlineMarkdown splits on /(**[^*]+**|`[^`]+`)/g to interleave bold/code with plain text nodes
 - [02-02]: parseBreadcrumb finds 'phases' segment in path array then reads next segment for NN- phase number prefix
+- [02-03]: JSX runtime shim must destructure {children, ...rest} from props — createElement treats 3rd arg as child, not key
+- [02-03]: Status badges use color-mix(in srgb, var(--success) 15%, transparent) for subtle tinted backgrounds
+- [02-03]: Phase row hover uses simple background, no negative margin trick
+- [02-03]: Segmented tab control instead of underline tabs
 
 ### Pending Todos
 
@@ -72,11 +72,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Research]: ROADMAP.md parsing validated against this project's own ROADMAP.md — format matched correctly
 - [Research]: openTerminal() Promise resolution on mid-install user close is inferred from Vercel plugin pattern; verify behavior at runtime
 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 02-02-PLAN.md — renderMarkdown, FileViewer, file viewer CSS
+Stopped at: Phase 2 complete, ready for Phase 3 planning
 Resume file: None
