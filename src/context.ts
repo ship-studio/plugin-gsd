@@ -4,6 +4,7 @@ import type { PluginContextValue } from './types';
 const _w = window as any;
 
 export function usePluginContext(): PluginContextValue {
+  // Try React Context pattern first (newer API, plugin-starter)
   const React = _w.__SHIPSTUDIO_REACT__;
   const CtxRef = _w.__SHIPSTUDIO_PLUGIN_CONTEXT_REF__;
 
@@ -11,6 +12,10 @@ export function usePluginContext(): PluginContextValue {
     const ctx = React.useContext(CtxRef) as PluginContextValue | null;
     if (ctx) return ctx;
   }
+
+  // Fall back to direct window global (older API, plugin-vercel)
+  const directCtx = _w.__SHIPSTUDIO_PLUGIN_CONTEXT__ as PluginContextValue | undefined;
+  if (directCtx) return directCtx;
 
   throw new Error('Plugin context not available.');
 }
