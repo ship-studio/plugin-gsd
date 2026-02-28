@@ -61,11 +61,11 @@ Plans:
   2. Clicking delete on an individual file or phase folder shows a lower-friction confirmation dialog naming the specific path being deleted
   3. After any deletion, the dashboard refreshes and shows the updated state with a toast notification confirming what was deleted
   4. A deleted .planning/ directory returns the plugin to the "no plans" state rather than an error state
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 03-01: ConfirmDialog component and delete orchestration — reusable confirmation modal, friction-level variants
-- [ ] 03-02: Full-directory delete and individual delete — rm -rf with path validation, post-delete state refresh
+- [ ] 03-01-PLAN.md -- Delete actions in types/hook, ConfirmDialog component, CSS classes for delete UI
+- [ ] 03-02-PLAN.md -- Wire delete buttons and ConfirmDialog into OverviewView, build dist/index.js, human-verify
 
 ## Progress
 
