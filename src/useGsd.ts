@@ -276,6 +276,54 @@ export function useGsd(): UseGsdReturn {
     setFileContent(null);
   }, []);
 
+  /**
+   * deleteDirectory() -- delete the entire .planning/ directory for the current project.
+   * Calls detect() afterwards to transition phase to 'no-planning'.
+   */
+  const deleteDirectory = useCallback(async (): Promise<void> => {
+    if (project === null) return;
+    try {
+      const result = await shellRef.current.exec(
+        'bash',
+        ['-c', `rm -rf "${project.path}/.planning"`],
+      );
+      if (result.exit_code !== 0) {
+        actionsRef.current.showToast('Failed to delete .planning/ directory', 'error');
+        return;
+      }
+      actionsRef.current.showToast('Deleted .planning/ directory', 'success');
+      await detect();
+    } catch {
+      actionsRef.current.showToast('Failed to delete .planning/ directory', 'error');
+    }
+  }, [project, detect]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /**
+   * deleteItem() -- delete an individual file or directory within .planning/.
+   * Validates the path, calls loadPlanning() afterwards to refresh the dashboard.
+   */
+  const deleteItem = useCallback(async (relativePath: string): Promise<void> => {
+    if (project === null) return;
+    if (!relativePath.startsWith('.planning/')) {
+      actionsRef.current.showToast('Invalid path', 'error');
+      return;
+    }
+    try {
+      const result = await shellRef.current.exec(
+        'bash',
+        ['-c', `rm -rf "${project.path}/${relativePath}"`],
+      );
+      if (result.exit_code !== 0) {
+        actionsRef.current.showToast(`Failed to delete ${relativePath}`, 'error');
+        return;
+      }
+      actionsRef.current.showToast(`Deleted ${relativePath}`, 'success');
+      await loadPlanning();
+    } catch {
+      actionsRef.current.showToast(`Failed to delete ${relativePath}`, 'error');
+    }
+  }, [project, loadPlanning]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return {
     // Phase 1
     phase,
@@ -294,5 +342,8 @@ export function useGsd(): UseGsdReturn {
     clearFileView,
     // Phase 2: toast passthrough
     showToast: actionsRef.current.showToast,
+    // Phase 3: delete actions
+    deleteDirectory,
+    deleteItem,
   };
 }

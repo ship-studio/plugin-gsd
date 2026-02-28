@@ -84,4 +84,8 @@ export interface UseGsdReturn {
 
   // Phase 2: toast passthrough (for views that need it)
   showToast: (message: string, type?: 'success' | 'error') => void;
+
+  // Phase 3: delete actions
+  deleteDirectory: () => Promise<void>;
+  deleteItem: (relativePath: string) => Promise<void>;
 }
