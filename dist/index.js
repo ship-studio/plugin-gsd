@@ -1,5 +1,5 @@
 import { jsxs, jsx, Fragment } from "data:text/javascript,export const jsx=window.__SHIPSTUDIO_REACT__.createElement;export const jsxs=window.__SHIPSTUDIO_REACT__.createElement;export const Fragment=window.__SHIPSTUDIO_REACT__.Fragment;";
-import { useRef, useState, useCallback, useEffect } from "data:text/javascript,export default window.__SHIPSTUDIO_REACT__;export const useState=window.__SHIPSTUDIO_REACT__.useState;export const useEffect=window.__SHIPSTUDIO_REACT__.useEffect;export const useCallback=window.__SHIPSTUDIO_REACT__.useCallback;export const useMemo=window.__SHIPSTUDIO_REACT__.useMemo;export const useRef=window.__SHIPSTUDIO_REACT__.useRef;export const useContext=window.__SHIPSTUDIO_REACT__.useContext;export const createElement=window.__SHIPSTUDIO_REACT__.createElement;export const Fragment=window.__SHIPSTUDIO_REACT__.Fragment;";
+import React, { useRef, useState, useCallback, useEffect } from "data:text/javascript,export default window.__SHIPSTUDIO_REACT__;export const useState=window.__SHIPSTUDIO_REACT__.useState;export const useEffect=window.__SHIPSTUDIO_REACT__.useEffect;export const useCallback=window.__SHIPSTUDIO_REACT__.useCallback;export const useMemo=window.__SHIPSTUDIO_REACT__.useMemo;export const useRef=window.__SHIPSTUDIO_REACT__.useRef;export const useContext=window.__SHIPSTUDIO_REACT__.useContext;export const createElement=window.__SHIPSTUDIO_REACT__.createElement;export const Fragment=window.__SHIPSTUDIO_REACT__.Fragment;";
 const STYLE_ID = "gsd-plugin-styles";
 const PLUGIN_CSS = `
 .gsd-modal-overlay {
@@ -80,13 +80,29 @@ const PLUGIN_CSS = `
 .gsd-file-viewer-copy { font-size: 11px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; }
 .gsd-file-viewer-copy:hover { color: var(--text-primary); }
 .gsd-file-viewer-content { font-size: 13px; line-height: 1.6; }
+
+/* Tabs */
+.gsd-tabs { display: flex; gap: 0; }
+.gsd-tab { padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--text-muted); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.15s; }
+.gsd-tab:hover { color: var(--text-secondary); }
+.gsd-tab-active { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+
+/* Guide view */
+.gsd-guide-intro { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+.gsd-guide-section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 20px 0 10px; }
+.gsd-guide-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+.gsd-guide-step-number { width: 22px; height: 22px; border-radius: 50%; background: var(--action); color: var(--action-text); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.gsd-guide-step-body { flex: 1; }
+.gsd-guide-command { font-family: monospace; font-size: 12px; background: var(--bg-tertiary); padding: 2px 8px; border-radius: 4px; cursor: pointer; display: inline-block; margin-bottom: 2px; border: 1px solid var(--border); }
+.gsd-guide-command:hover { background: var(--bg-secondary); border-color: var(--text-muted); }
+.gsd-guide-desc { font-size: 12px; color: var(--text-secondary); }
 `;
 const _w = window;
 function usePluginContext() {
-  const React = _w.__SHIPSTUDIO_REACT__;
+  const React2 = _w.__SHIPSTUDIO_REACT__;
   const CtxRef = _w.__SHIPSTUDIO_PLUGIN_CONTEXT_REF__;
-  if (CtxRef && (React == null ? void 0 : React.useContext)) {
-    const ctx = React.useContext(CtxRef);
+  if (CtxRef && (React2 == null ? void 0 : React2.useContext)) {
+    const ctx = React2.useContext(CtxRef);
     if (ctx) return ctx;
   }
   const directCtx = _w.__SHIPSTUDIO_PLUGIN_CONTEXT__;
@@ -355,6 +371,491 @@ function NoProjectView() {
     /* @__PURE__ */ jsx("p", { style: { color: "var(--text-secondary)", fontSize: 13 }, children: "Open a project in Ship Studio to use the GSD plugin." })
   ] });
 }
+function OverviewView({ gsd }) {
+  const [expandedPhases, setExpandedPhases] = useState(/* @__PURE__ */ new Set());
+  function togglePhase(index) {
+    const next = new Set(expandedPhases);
+    if (next.has(index)) {
+      next.delete(index);
+    } else {
+      next.add(index);
+    }
+    setExpandedPhases(next);
+  }
+  const totalPhases = gsd.planningData.length;
+  const completedPhases = gsd.planningData.filter((p) => p.status === "complete").length;
+  const progressPct = totalPhases > 0 ? Math.round(completedPhases / totalPhases * 100) : 0;
+  return /* @__PURE__ */ jsxs("div", { children: [
+    totalPhases > 0 && /* @__PURE__ */ jsxs("div", { children: [
+      /* @__PURE__ */ jsxs("div", { className: "gsd-progress-label", children: [
+        "Phase ",
+        completedPhases,
+        " of ",
+        totalPhases,
+        " — ",
+        progressPct,
+        "% complete"
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "gsd-progress-bar", children: /* @__PURE__ */ jsx(
+        "div",
+        {
+          className: "gsd-progress-fill",
+          style: { width: `${progressPct}%` }
+        }
+      ) })
+    ] }),
+    gsd.planningLoading && /* @__PURE__ */ jsx("div", { className: "gsd-loading-indicator", children: "Loading plans..." }),
+    !gsd.planningLoading && gsd.planningData.length === 0 && /* @__PURE__ */ jsx("div", { style: { color: "var(--text-muted)", fontSize: 12 }, children: "No phases found in ROADMAP.md" }),
+    gsd.planningData.map((phase, index) => {
+      const isExpanded = expandedPhases.has(index);
+      let badgeStyle;
+      let badgeLabel;
+      if (phase.status === "complete") {
+        badgeStyle = { background: "var(--success)", color: "#fff" };
+        badgeLabel = "Complete";
+      } else if (phase.status === "in-progress") {
+        badgeStyle = { background: "var(--action)", color: "var(--action-text)" };
+        badgeLabel = "In Progress";
+      } else {
+        badgeStyle = { background: "var(--bg-tertiary)", color: "var(--text-muted)" };
+        badgeLabel = "Not Started";
+      }
+      return /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsxs(
+          "div",
+          {
+            className: "gsd-phase-row",
+            onClick: () => togglePhase(index),
+            role: "button",
+            "aria-expanded": isExpanded,
+            children: [
+              /* @__PURE__ */ jsx(
+                "span",
+                {
+                  className: `gsd-phase-chevron${isExpanded ? " gsd-phase-chevron-open" : ""}`,
+                  children: "▶"
+                }
+              ),
+              /* @__PURE__ */ jsxs("span", { className: "gsd-phase-name", children: [
+                "Phase ",
+                phase.number,
+                ": ",
+                phase.name
+              ] }),
+              /* @__PURE__ */ jsx("span", { className: "gsd-status-badge", style: badgeStyle, children: badgeLabel }),
+              /* @__PURE__ */ jsxs("span", { className: "gsd-phase-plans", children: [
+                phase.plansComplete,
+                "/",
+                phase.plansTotal,
+                " plans"
+              ] })
+            ]
+          }
+        ),
+        isExpanded && /* @__PURE__ */ jsx("div", { className: "gsd-file-list", children: phase.dirName === null || phase.files.length === 0 ? /* @__PURE__ */ jsx("div", { style: { color: "var(--text-muted)", fontSize: 11, padding: "4px 8px" }, children: "No files found" }) : phase.files.map((fileName) => /* @__PURE__ */ jsxs(
+          "div",
+          {
+            className: "gsd-file-item",
+            onClick: () => void gsd.readFile(
+              `.planning/phases/${phase.dirName}/${fileName}`
+            ),
+            role: "button",
+            children: [
+              /* @__PURE__ */ jsx("span", { style: { fontSize: 11, color: "var(--text-muted)" }, children: "📄" }),
+              fileName
+            ]
+          },
+          fileName
+        )) })
+      ] }, phase.number);
+    })
+  ] });
+}
+function inlineMarkdown(text, baseKey) {
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return React.createElement("strong", { key: `${baseKey}-b${i}` }, part.slice(2, -2));
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return React.createElement("code", {
+        key: `${baseKey}-c${i}`,
+        style: {
+          background: "var(--bg-tertiary)",
+          padding: "1px 4px",
+          borderRadius: "3px",
+          fontFamily: "monospace",
+          fontSize: "11px"
+        }
+      }, part.slice(1, -1));
+    }
+    return part;
+  });
+}
+function renderMarkdown(content) {
+  try {
+    const lines = content.split("\n");
+    const elements = [];
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      if (line.trim().startsWith("```")) {
+        const codeLines = [];
+        i++;
+        while (i < lines.length && !lines[i].trim().startsWith("```")) {
+          codeLines.push(lines[i]);
+          i++;
+        }
+        i++;
+        elements.push(
+          React.createElement(
+            "pre",
+            {
+              key: `line-${i}`,
+              style: {
+                background: "var(--bg-tertiary)",
+                fontFamily: "monospace",
+                fontSize: "11px",
+                borderRadius: "6px",
+                padding: "12px",
+                overflowX: "auto",
+                margin: "8px 0"
+              }
+            },
+            React.createElement("code", null, codeLines.join("\n"))
+          )
+        );
+        continue;
+      }
+      if (/^# /.test(line)) {
+        elements.push(
+          React.createElement(
+            "h1",
+            {
+              key: `line-${i}`,
+              style: {
+                color: "var(--text-primary)",
+                fontSize: "18px",
+                fontWeight: 700,
+                margin: "16px 0 8px",
+                lineHeight: 1.3
+              }
+            },
+            inlineMarkdown(line.slice(2), `line-${i}`)
+          )
+        );
+        i++;
+        continue;
+      }
+      if (/^## /.test(line)) {
+        elements.push(
+          React.createElement(
+            "h2",
+            {
+              key: `line-${i}`,
+              style: {
+                color: "var(--text-primary)",
+                fontSize: "15px",
+                fontWeight: 600,
+                margin: "14px 0 6px",
+                lineHeight: 1.3
+              }
+            },
+            inlineMarkdown(line.slice(3), `line-${i}`)
+          )
+        );
+        i++;
+        continue;
+      }
+      if (/^### /.test(line)) {
+        elements.push(
+          React.createElement(
+            "h3",
+            {
+              key: `line-${i}`,
+              style: {
+                color: "var(--text-primary)",
+                fontSize: "13px",
+                fontWeight: 600,
+                margin: "12px 0 4px",
+                lineHeight: 1.3
+              }
+            },
+            inlineMarkdown(line.slice(4), `line-${i}`)
+          )
+        );
+        i++;
+        continue;
+      }
+      if (/^[-*] /.test(line)) {
+        elements.push(
+          React.createElement(
+            "div",
+            {
+              key: `line-${i}`,
+              style: {
+                display: "flex",
+                gap: "6px",
+                padding: "2px 0",
+                color: "var(--text-primary)"
+              }
+            },
+            React.createElement("span", { style: { flexShrink: 0 } }, "•"),
+            React.createElement("span", null, inlineMarkdown(line.slice(2), `line-${i}`))
+          )
+        );
+        i++;
+        continue;
+      }
+      const orderedMatch = line.match(/^(\d+)\. (.+)/);
+      if (orderedMatch) {
+        elements.push(
+          React.createElement(
+            "div",
+            {
+              key: `line-${i}`,
+              style: {
+                display: "flex",
+                gap: "6px",
+                padding: "2px 0",
+                color: "var(--text-primary)"
+              }
+            },
+            React.createElement(
+              "span",
+              { style: { flexShrink: 0, minWidth: "20px" } },
+              `${orderedMatch[1]}.`
+            ),
+            React.createElement("span", null, inlineMarkdown(orderedMatch[2], `line-${i}`))
+          )
+        );
+        i++;
+        continue;
+      }
+      if (/^---+$/.test(line.trim())) {
+        elements.push(
+          React.createElement("hr", {
+            key: `line-${i}`,
+            style: {
+              borderTop: "1px solid var(--border)",
+              borderBottom: "none",
+              margin: "12px 0"
+            }
+          })
+        );
+        i++;
+        continue;
+      }
+      if (/^\|/.test(line)) {
+        if (/^\|[\s\-|:]+\|$/.test(line)) {
+          i++;
+          continue;
+        }
+        const cells = line.split("|").slice(1, -1).map((c) => c.trim());
+        elements.push(
+          React.createElement(
+            "div",
+            {
+              key: `line-${i}`,
+              style: {
+                display: "flex",
+                gap: "16px",
+                padding: "3px 0",
+                fontSize: "12px",
+                color: "var(--text-secondary)"
+              }
+            },
+            cells.map(
+              (cell, ci) => React.createElement(
+                "span",
+                { key: `cell-${ci}`, style: { flex: 1 } },
+                inlineMarkdown(cell, `line-${i}-cell-${ci}`)
+              )
+            )
+          )
+        );
+        i++;
+        continue;
+      }
+      if (line.trim() === "") {
+        elements.push(
+          React.createElement("div", {
+            key: `line-${i}`,
+            style: { height: "8px" }
+          })
+        );
+        i++;
+        continue;
+      }
+      elements.push(
+        React.createElement(
+          "p",
+          {
+            key: `line-${i}`,
+            style: {
+              color: "var(--text-primary)",
+              margin: "0 0 4px"
+            }
+          },
+          inlineMarkdown(line, `line-${i}`)
+        )
+      );
+      i++;
+    }
+    return React.createElement(React.Fragment, null, ...elements);
+  } catch (_err) {
+    return React.createElement(
+      "pre",
+      {
+        style: {
+          fontFamily: "monospace",
+          fontSize: "11px",
+          whiteSpace: "pre-wrap",
+          color: "var(--text-primary)"
+        }
+      },
+      content
+    );
+  }
+}
+function parseBreadcrumb(filePath) {
+  const segments = filePath.split("/");
+  const filename = segments[segments.length - 1];
+  const phasesDirIndex = segments.indexOf("phases");
+  if (phasesDirIndex !== -1 && phasesDirIndex + 1 < segments.length) {
+    const phaseDirName = segments[phasesDirIndex + 1];
+    const match = phaseDirName.match(/^(\d+)-/);
+    if (match) {
+      const phaseNum = parseInt(match[1], 10);
+      return `Phase ${phaseNum} > ${filename}`;
+    }
+  }
+  return filename;
+}
+function FileViewer({ gsd }) {
+  const breadcrumb = gsd.activeFile ? parseBreadcrumb(gsd.activeFile) : "";
+  function handleCopyPath() {
+    if (!gsd.activeFile) return;
+    navigator.clipboard.writeText(gsd.activeFile).then(
+      () => gsd.showToast("Path copied to clipboard", "success"),
+      () => gsd.showToast("Failed to copy path", "error")
+    );
+  }
+  return React.createElement(
+    "div",
+    null,
+    // Header row
+    React.createElement(
+      "div",
+      { className: "gsd-file-viewer-header" },
+      // Back button
+      React.createElement(
+        "button",
+        {
+          className: "gsd-btn gsd-btn-secondary",
+          onClick: () => gsd.clearFileView()
+        },
+        "← Back"
+      ),
+      // Breadcrumb
+      React.createElement(
+        "span",
+        { className: "gsd-file-viewer-breadcrumb" },
+        breadcrumb
+      ),
+      // Copy-path button
+      React.createElement(
+        "button",
+        {
+          className: "gsd-file-viewer-copy",
+          onClick: handleCopyPath,
+          title: "Copy file path"
+        },
+        "Copy path"
+      )
+    ),
+    // Loading state
+    gsd.fileLoading && React.createElement(
+      "div",
+      { className: "gsd-loading-indicator" },
+      "Loading file…"
+    ),
+    // Content body
+    !gsd.fileLoading && gsd.fileContent !== null && React.createElement(
+      "div",
+      { className: "gsd-file-viewer-content" },
+      renderMarkdown(gsd.fileContent)
+    ),
+    // Error state: active file set but no content loaded
+    !gsd.fileLoading && gsd.fileContent === null && gsd.activeFile !== null && React.createElement(
+      "div",
+      { className: "gsd-error-state" },
+      "Could not load file."
+    )
+  );
+}
+const CORE_STEPS = [
+  { command: "/gsd:new-project", description: "Set up a new project with requirements and roadmap" },
+  { command: "/gsd:discuss-phase", description: "Discuss implementation decisions for the next phase" },
+  { command: "/gsd:plan-phase", description: "Create executable plans with task breakdown" },
+  { command: "/gsd:execute-phase", description: "Run plans to build the phase" },
+  { command: "/gsd:verify-phase", description: "Verify all must-haves are met" }
+];
+const UTILITY_COMMANDS = [
+  { command: "/gsd:progress", description: "Check overall project progress" },
+  { command: "/gsd:research-phase", description: "Deep research before planning" },
+  { command: "/gsd:debug", description: "Debug issues in the current phase" },
+  { command: "/gsd:add-todo", description: "Add a todo to the project backlog" }
+];
+function GuideView({ showToast }) {
+  const handleCopy = (command) => {
+    navigator.clipboard.writeText(command).then(
+      () => showToast(`Copied ${command}`, "success"),
+      () => showToast("Failed to copy", "error")
+    );
+  };
+  return /* @__PURE__ */ jsxs("div", { children: [
+    /* @__PURE__ */ jsxs("p", { className: "gsd-guide-intro", children: [
+      "Get Shit Done (GSD) is a structured planning system for Claude Code projects. It breaks work into phases with discussion, planning, execution, and verification steps. Start by running ",
+      /* @__PURE__ */ jsx("code", { children: "/gsd:new-project" }),
+      " in Claude Code to set up your project."
+    ] }),
+    /* @__PURE__ */ jsx("div", { className: "gsd-guide-section-title", children: "Core Workflow" }),
+    CORE_STEPS.map((step, index) => /* @__PURE__ */ jsxs("div", { className: "gsd-guide-step", children: [
+      /* @__PURE__ */ jsx("div", { className: "gsd-guide-step-number", children: index + 1 }),
+      /* @__PURE__ */ jsxs("div", { className: "gsd-guide-step-body", children: [
+        /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: "gsd-guide-command",
+            onClick: () => handleCopy(step.command),
+            role: "button",
+            title: "Click to copy",
+            children: step.command
+          }
+        ),
+        /* @__PURE__ */ jsx("div", { className: "gsd-guide-desc", children: step.description })
+      ] })
+    ] }, step.command)),
+    /* @__PURE__ */ jsx("div", { className: "gsd-guide-section-title", children: "Utility Commands" }),
+    UTILITY_COMMANDS.map((item) => /* @__PURE__ */ jsxs("div", { className: "gsd-guide-step", children: [
+      /* @__PURE__ */ jsx("div", { className: "gsd-guide-step-number", style: { background: "var(--bg-tertiary)", color: "var(--text-muted)" }, children: "—" }),
+      /* @__PURE__ */ jsxs("div", { className: "gsd-guide-step-body", children: [
+        /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: "gsd-guide-command",
+            onClick: () => handleCopy(item.command),
+            role: "button",
+            title: "Click to copy",
+            children: item.command
+          }
+        ),
+        /* @__PURE__ */ jsx("div", { className: "gsd-guide-desc", children: item.description })
+      ] })
+    ] }, item.command))
+  ] });
+}
 function useInjectStyles() {
   useEffect(() => {
     if (document.getElementById(STYLE_ID)) return;
@@ -368,12 +869,45 @@ function useInjectStyles() {
     };
   }, []);
 }
+function renderDashboardContent(gsd) {
+  switch (gsd.phase) {
+    case "loading":
+      return /* @__PURE__ */ jsx("div", { className: "gsd-loading-indicator", children: "Checking GSD status..." });
+    case "no-project":
+      return /* @__PURE__ */ jsx(NoProjectView, {});
+    case "gsd-not-installed":
+      return /* @__PURE__ */ jsx(InstallView, { gsd });
+    case "no-planning":
+      return /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("h3", { children: "No Planning Directory" }),
+        /* @__PURE__ */ jsxs("p", { style: { color: "var(--text-secondary)", fontSize: 13 }, children: [
+          "GSD is installed but this project has no .planning/ directory. Run",
+          " ",
+          /* @__PURE__ */ jsx("code", { children: "/gsd:new-project" }),
+          " in Claude Code to start planning."
+        ] })
+      ] });
+    case "has-planning":
+      return /* @__PURE__ */ jsx(OverviewView, { gsd });
+    case "error":
+      return /* @__PURE__ */ jsxs("div", { className: "gsd-error-state", children: [
+        "Error: ",
+        gsd.error
+      ] });
+  }
+}
 function ToolbarButton() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("dashboard");
   const gsd = useGsd();
   useInjectStyles();
   useEffect(() => {
-    if (modalOpen) void gsd.redetect();
+    if (modalOpen) {
+      setActiveTab(
+        gsd.phase === "gsd-not-installed" || gsd.phase === "no-project" ? "guide" : "dashboard"
+      );
+      void gsd.redetect();
+    }
   }, [modalOpen]);
   useEffect(() => {
     if (!modalOpen) return;
@@ -383,41 +917,10 @@ function ToolbarButton() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [modalOpen]);
-  let content;
-  switch (gsd.phase) {
-    case "loading":
-      content = /* @__PURE__ */ jsx("div", { className: "gsd-loading-indicator", children: "Checking GSD status..." });
-      break;
-    case "no-project":
-      content = /* @__PURE__ */ jsx(NoProjectView, {});
-      break;
-    case "gsd-not-installed":
-      content = /* @__PURE__ */ jsx(InstallView, { gsd });
-      break;
-    case "no-planning":
-      content = /* @__PURE__ */ jsxs("div", { children: [
-        /* @__PURE__ */ jsx("h3", { children: "No Planning Directory" }),
-        /* @__PURE__ */ jsxs("p", { style: { color: "var(--text-secondary)", fontSize: 13 }, children: [
-          "GSD is installed but this project has no .planning/ directory. Run",
-          " ",
-          /* @__PURE__ */ jsx("code", { children: "/gsd:new-project" }),
-          " in Claude Code to start planning."
-        ] })
-      ] });
-      break;
-    case "has-planning":
-      content = /* @__PURE__ */ jsxs("div", { children: [
-        /* @__PURE__ */ jsx("h3", { children: "Dashboard" }),
-        /* @__PURE__ */ jsx("p", { style: { color: "var(--text-secondary)", fontSize: 13 }, children: "Plan dashboard coming in Phase 2." })
-      ] });
-      break;
-    case "error":
-      content = /* @__PURE__ */ jsxs("div", { className: "gsd-error-state", children: [
-        "Error: ",
-        gsd.error
-      ] });
-      break;
-  }
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === "guide") gsd.clearFileView();
+  };
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsx("button", { className: "toolbar-icon-btn", title: "GSD", onClick: () => setModalOpen(true), children: /* @__PURE__ */ jsxs("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", children: [
       /* @__PURE__ */ jsx("polyline", { points: "9 11 12 14 22 4" }),
@@ -426,9 +929,27 @@ function ToolbarButton() {
     modalOpen && /* @__PURE__ */ jsx("div", { className: "gsd-modal-overlay", onClick: () => setModalOpen(false), children: /* @__PURE__ */ jsxs("div", { className: "gsd-modal", onClick: (e) => e.stopPropagation(), children: [
       /* @__PURE__ */ jsxs("div", { className: "gsd-modal-header", children: [
         /* @__PURE__ */ jsx("span", { children: "GSD" }),
+        /* @__PURE__ */ jsxs("div", { className: "gsd-tabs", children: [
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              className: `gsd-tab ${activeTab === "dashboard" ? "gsd-tab-active" : ""}`,
+              onClick: () => handleTabChange("dashboard"),
+              children: "Dashboard"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              className: `gsd-tab ${activeTab === "guide" ? "gsd-tab-active" : ""}`,
+              onClick: () => handleTabChange("guide"),
+              children: "Guide"
+            }
+          )
+        ] }),
         /* @__PURE__ */ jsx("button", { className: "gsd-btn gsd-btn-secondary", onClick: () => setModalOpen(false), children: "Close" })
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "gsd-modal-body", children: content })
+      /* @__PURE__ */ jsx("div", { className: "gsd-modal-body", children: activeTab === "guide" ? /* @__PURE__ */ jsx(GuideView, { showToast: gsd.showToast }) : gsd.activeFile || gsd.fileLoading ? /* @__PURE__ */ jsx(FileViewer, { gsd }) : renderDashboardContent(gsd) })
     ] }) })
   ] });
 }

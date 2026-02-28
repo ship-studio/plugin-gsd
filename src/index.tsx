@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { STYLE_ID, PLUGIN_CSS } from './styles';
 import { useGsd } from './useGsd';
+import type { UseGsdReturn } from './types';
 import { InstallView } from './views/InstallView';
 import { NoProjectView } from './views/NoProjectView';
+import { OverviewView } from './views/OverviewView';
+import { FileViewer } from './views/FileViewer';
+import { GuideView } from './views/GuideView';
 
 function useInjectStyles() {
   useEffect(() => {
@@ -17,13 +21,51 @@ function useInjectStyles() {
   }, []);
 }
 
+/**
+ * Renders the dashboard content based on the current plugin phase.
+ * Called when the Dashboard tab is active and no file is being viewed.
+ */
+function renderDashboardContent(gsd: UseGsdReturn): React.ReactNode {
+  switch (gsd.phase) {
+    case 'loading':
+      return <div className="gsd-loading-indicator">Checking GSD status...</div>;
+    case 'no-project':
+      return <NoProjectView />;
+    case 'gsd-not-installed':
+      return <InstallView gsd={gsd} />;
+    case 'no-planning':
+      return (
+        <div>
+          <h3>No Planning Directory</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
+            GSD is installed but this project has no .planning/ directory. Run{' '}
+            <code>/gsd:new-project</code> in Claude Code to start planning.
+          </p>
+        </div>
+      );
+    case 'has-planning':
+      return <OverviewView gsd={gsd} />;
+    case 'error':
+      return <div className="gsd-error-state">Error: {gsd.error}</div>;
+  }
+}
+
 function ToolbarButton() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'guide'>('dashboard');
   const gsd = useGsd();
   useInjectStyles();
 
+  // Smart default: set tab on every modal open, then redetect state
   useEffect(() => {
-    if (modalOpen) void gsd.redetect();
+    if (modalOpen) {
+      setActiveTab(
+        gsd.phase === 'gsd-not-installed' || gsd.phase === 'no-project'
+          ? 'guide'
+          : 'dashboard'
+      );
+      void gsd.redetect();
+    }
   }, [modalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -35,42 +77,11 @@ function ToolbarButton() {
     return () => window.removeEventListener('keydown', handler);
   }, [modalOpen]);
 
-  let content: React.ReactNode;
-  switch (gsd.phase) {
-    case 'loading':
-      content = <div className="gsd-loading-indicator">Checking GSD status...</div>;
-      break;
-    case 'no-project':
-      content = <NoProjectView />;
-      break;
-    case 'gsd-not-installed':
-      content = <InstallView gsd={gsd} />;
-      break;
-    case 'no-planning':
-      content = (
-        <div>
-          <h3>No Planning Directory</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
-            GSD is installed but this project has no .planning/ directory. Run{' '}
-            <code>/gsd:new-project</code> in Claude Code to start planning.
-          </p>
-        </div>
-      );
-      break;
-    case 'has-planning':
-      content = (
-        <div>
-          <h3>Dashboard</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
-            Plan dashboard coming in Phase 2.
-          </p>
-        </div>
-      );
-      break;
-    case 'error':
-      content = <div className="gsd-error-state">Error: {gsd.error}</div>;
-      break;
-  }
+  // When switching to Guide, clear any open file so returning to Dashboard shows overview
+  const handleTabChange = (tab: 'dashboard' | 'guide') => {
+    setActiveTab(tab);
+    if (tab === 'guide') gsd.clearFileView();
+  };
 
   return (
     <>
@@ -85,11 +96,32 @@ function ToolbarButton() {
           <div className="gsd-modal" onClick={e => e.stopPropagation()}>
             <div className="gsd-modal-header">
               <span>GSD</span>
+              <div className="gsd-tabs">
+                <button
+                  className={`gsd-tab ${activeTab === 'dashboard' ? 'gsd-tab-active' : ''}`}
+                  onClick={() => handleTabChange('dashboard')}
+                >
+                  Dashboard
+                </button>
+                <button
+                  className={`gsd-tab ${activeTab === 'guide' ? 'gsd-tab-active' : ''}`}
+                  onClick={() => handleTabChange('guide')}
+                >
+                  Guide
+                </button>
+              </div>
               <button className="gsd-btn gsd-btn-secondary" onClick={() => setModalOpen(false)}>
                 Close
               </button>
             </div>
-            <div className="gsd-modal-body">{content}</div>
+            <div className="gsd-modal-body">
+              {activeTab === 'guide'
+                ? <GuideView showToast={gsd.showToast} />
+                : (gsd.activeFile || gsd.fileLoading)
+                  ? <FileViewer gsd={gsd} />
+                  : renderDashboardContent(gsd)
+              }
+            </div>
           </div>
         </div>
       )}

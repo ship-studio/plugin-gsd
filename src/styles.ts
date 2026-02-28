@@ -79,4 +79,20 @@ export const PLUGIN_CSS = `
 .gsd-file-viewer-copy { font-size: 11px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-tertiary); color: var(--text-secondary); cursor: pointer; }
 .gsd-file-viewer-copy:hover { color: var(--text-primary); }
 .gsd-file-viewer-content { font-size: 13px; line-height: 1.6; }
+
+/* Tabs */
+.gsd-tabs { display: flex; gap: 0; }
+.gsd-tab { padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--text-muted); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.15s; }
+.gsd-tab:hover { color: var(--text-secondary); }
+.gsd-tab-active { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+
+/* Guide view */
+.gsd-guide-intro { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+.gsd-guide-section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 20px 0 10px; }
+.gsd-guide-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+.gsd-guide-step-number { width: 22px; height: 22px; border-radius: 50%; background: var(--action); color: var(--action-text); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.gsd-guide-step-body { flex: 1; }
+.gsd-guide-command { font-family: monospace; font-size: 12px; background: var(--bg-tertiary); padding: 2px 8px; border-radius: 4px; cursor: pointer; display: inline-block; margin-bottom: 2px; border: 1px solid var(--border); }
+.gsd-guide-command:hover { background: var(--bg-secondary); border-color: var(--text-muted); }
+.gsd-guide-desc { font-size: 12px; color: var(--text-secondary); }
 `;
