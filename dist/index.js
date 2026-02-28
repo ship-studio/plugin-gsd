@@ -861,13 +861,15 @@ function GuideView({ showToast }) {
 }
 function useInjectStyles() {
   useEffect(() => {
-    let style = document.getElementById(STYLE_ID);
-    if (!style) {
-      style = document.createElement("style");
-      style.id = STYLE_ID;
-      document.head.appendChild(style);
+    const existing = document.getElementById(STYLE_ID);
+    if (existing) {
+      existing.textContent = PLUGIN_CSS;
+      return;
     }
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
     style.textContent = PLUGIN_CSS;
+    document.head.appendChild(style);
     return () => {
       var _a;
       (_a = document.getElementById(STYLE_ID)) == null ? void 0 : _a.remove();
