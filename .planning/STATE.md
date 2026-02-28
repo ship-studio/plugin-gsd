@@ -49,7 +49,7 @@ Recent decisions affecting current work:
 - [Init]: Claude Code only — Ship Studio is already a Claude Code tool
 - [01-01]: React aliased to data-URL re-exporting window.__SHIPSTUDIO_REACT__ — required for hook sharing with host
 - [01-01]: dist/ excluded from .gitignore — Ship Studio clones repo and reads dist/index.js directly without building
-- [01-01]: Context uses __SHIPSTUDIO_PLUGIN_CONTEXT_REF__ (api_version 1), not deprecated __SHIPSTUDIO_PLUGIN_CONTEXT__
+- [01-01→fix]: Context must try __SHIPSTUDIO_PLUGIN_CONTEXT_REF__ first, then fall back to __SHIPSTUDIO_PLUGIN_CONTEXT__ (direct global). React Context alone crashes the app on plugin link.
 - [01-01]: PluginPhase as 6-member discriminated union — each state maps to distinct view component
 - [01-02]: useRef pattern for shell/actions keeps detect() and install() stable without capturing stale context values
 - [01-02]: install() re-checks filesystem after openTerminal resolves — user may close terminal before completion
