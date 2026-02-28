@@ -45,12 +45,12 @@ Plans:
   3. The file panel has a back button that returns the user to the dashboard overview
   4. Opening the plugin modal refreshes plan data so changes made in Claude Code are reflected without restarting Ship Studio
   5. A guide tab is accessible from any state (installed or not) and displays the GSD workflow steps in visual terms
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 02-01: ROADMAP.md parser and OverviewView — defensive markdown parsing, phase list display
-- [ ] 02-02: FileViewer — shell.exec-based file reading, breadcrumb navigation, race condition guards
-- [ ] 02-03: GuideView and navigation — static workflow explainer, tab routing, modal refresh on open
+- [ ] 02-01-PLAN.md -- Types, parseRoadmap utility, useGsd planning extension, OverviewView with accordion and progress bar
+- [ ] 02-02-PLAN.md -- Lightweight markdown renderer, FileViewer with breadcrumb navigation and copy-path
+- [ ] 02-03-PLAN.md -- GuideView with click-to-copy commands, tab navigation, final wiring, build dist/index.js, human-verify
 
 ### Phase 3: Delete Flows & Polish
 **Goal**: Users can safely delete their entire .planning/ directory or individual phase files, with confirmation dialogs that prevent accidental data loss
