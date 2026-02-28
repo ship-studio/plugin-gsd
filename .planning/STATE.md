@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 1 of 3 (Scaffold, Detection & Install)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-02-28 — Roadmap created
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-28 — Completed 01-01 (Project Scaffold)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 12%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 2 min
+- Total execution time: 0.03 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1. Scaffold, Detection & Install | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: -
+- Last 5 plans: 01-01 (2 min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -47,6 +47,10 @@ Recent decisions affecting current work:
 - [Init]: openTerminal() for GSD install — interactive installer needs user input
 - [Init]: Detect GSD via filesystem check — check ~/.claude/get-shit-done/ existence
 - [Init]: Claude Code only — Ship Studio is already a Claude Code tool
+- [01-01]: React aliased to data-URL re-exporting window.__SHIPSTUDIO_REACT__ — required for hook sharing with host
+- [01-01]: dist/ excluded from .gitignore — Ship Studio clones repo and reads dist/index.js directly without building
+- [01-01]: Context uses __SHIPSTUDIO_PLUGIN_CONTEXT_REF__ (api_version 1), not deprecated __SHIPSTUDIO_PLUGIN_CONTEXT__
+- [01-01]: PluginPhase as 6-member discriminated union — each state maps to distinct view component
 
 ### Pending Todos
 
@@ -60,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Roadmap created, ready to plan Phase 1
+Stopped at: Completed 01-01-PLAN.md (Project Scaffold)
 Resume file: None
