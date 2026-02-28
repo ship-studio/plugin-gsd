@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 3 (Delete Flows & Polish) — in progress
-Plan: Phase 3 Plan 1 complete (1/3), Plan 2 next
-Status: 03-01 complete — delete infrastructure built and committed
-Last activity: 2026-02-28 — 03-01 complete (deleteDirectory, deleteItem, ConfirmDialog)
+Plan: Phase 3 Plan 2 complete (2/3), Plan 3 next
+Status: 03-02 complete — delete buttons wired into OverviewView, human-verified in Ship Studio
+Last activity: 2026-02-28 — 03-02 complete (delete buttons, ConfirmDialog wired, human-verified)
 
-Progress: [███████░░░] 72% (Phases 1-2 complete, Phase 3 in progress 1/3)
+Progress: [████████░░] 80% (Phases 1-2 complete, Phase 3 in progress 2/3)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7 (Phase 1: 3 + Phase 2: 3 + Phase 3: 1)
+- Total plans completed: 8 (Phase 1: 3 + Phase 2: 3 + Phase 3: 2)
 - Average duration: 2 min
 - Total execution time: ~0.2 hours
 
@@ -29,7 +29,7 @@ Progress: [███████░░░] 72% (Phases 1-2 complete, Phase 3 in 
 |-------|-------|-------|----------|
 | 1. Scaffold, Detection & Install | 3 | 5 min | 2 min |
 | 2. Dashboard & File Reading | 3 | multi-session | - |
-| 3. Delete Flows & Polish | 1/3 | 2 min | 2 min |
+| 3. Delete Flows & Polish | 2/3 | 7 min | ~3 min |
 
 *Updated after each plan completion*
 
@@ -70,6 +70,9 @@ Recent decisions affecting current work:
 - [03-01]: deleteItem calls loadPlanning() post-delete — refreshes dashboard without phase transition overhead
 - [03-01]: deleteItem validates .planning/ prefix before exec — prevents path traversal or unintended rm -rf
 - [03-01]: ConfirmDialog Cancel button appears before Delete in DOM order — leftmost is safer default
+- [03-02]: ConfirmDialog renders inline as full-view replacement (not overlay) — prevents overflow/clipping in constrained plugin panel
+- [03-02]: e.stopPropagation() on phase-row and file-item delete buttons prevents accordion toggle and readFile from co-firing
+- [03-02]: Phase row delete path is .planning/phases/{dirName} — satisfies deleteItem's .planning/ prefix validation
 
 ### Pending Todos
 
@@ -82,5 +85,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 03-01-PLAN.md (delete infrastructure), ready for 03-02 (wire delete buttons)
+Stopped at: Completed 03-02-PLAN.md (wire delete buttons + human verification), ready for 03-03 (phase verification)
 Resume file: None
