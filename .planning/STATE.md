@@ -9,17 +9,17 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 ## Current Position
 
-Phase: 2 of 3 complete — ready for Phase 3 (Delete Flows & Polish)
-Plan: Phase 2 complete (3/3), Phase 3 not yet planned
-Status: Phase 2 verified and complete — ready for Phase 3 planning
-Last activity: 2026-02-28 — Phase 2 complete (JSX runtime fix, CSS polish, human-verified)
+Phase: 3 (Delete Flows & Polish) — in progress
+Plan: Phase 3 Plan 1 complete (1/3), Plan 2 next
+Status: 03-01 complete — delete infrastructure built and committed
+Last activity: 2026-02-28 — 03-01 complete (deleteDirectory, deleteItem, ConfirmDialog)
 
-Progress: [██████░░░░] 67% (Phases 1-2 complete, Phase 3 remaining)
+Progress: [███████░░░] 72% (Phases 1-2 complete, Phase 3 in progress 1/3)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6 (Phase 1: 3 + Phase 2: 3)
+- Total plans completed: 7 (Phase 1: 3 + Phase 2: 3 + Phase 3: 1)
 - Average duration: 2 min
 - Total execution time: ~0.2 hours
 
@@ -29,6 +29,7 @@ Progress: [██████░░░░] 67% (Phases 1-2 complete, Phase 3 rem
 |-------|-------|-------|----------|
 | 1. Scaffold, Detection & Install | 3 | 5 min | 2 min |
 | 2. Dashboard & File Reading | 3 | multi-session | - |
+| 3. Delete Flows & Polish | 1/3 | 2 min | 2 min |
 
 *Updated after each plan completion*
 
@@ -65,6 +66,10 @@ Recent decisions affecting current work:
 - [02-03]: Status badges use color-mix(in srgb, var(--success) 15%, transparent) for subtle tinted backgrounds
 - [02-03]: Phase row hover uses simple background, no negative margin trick
 - [02-03]: Segmented tab control instead of underline tabs
+- [03-01]: deleteDirectory calls detect() post-delete — triggers full phase transition to no-planning
+- [03-01]: deleteItem calls loadPlanning() post-delete — refreshes dashboard without phase transition overhead
+- [03-01]: deleteItem validates .planning/ prefix before exec — prevents path traversal or unintended rm -rf
+- [03-01]: ConfirmDialog Cancel button appears before Delete in DOM order — leftmost is safer default
 
 ### Pending Todos
 
@@ -77,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Phase 2 complete, ready for Phase 3 planning
+Stopped at: Completed 03-01-PLAN.md (delete infrastructure), ready for 03-02 (wire delete buttons)
 Resume file: None

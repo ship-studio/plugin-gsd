@@ -25,9 +25,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Plan Management
 
-- [ ] **MGMT-01**: User can delete the entire `.planning/` directory with a confirmation dialog
-- [ ] **MGMT-02**: User can delete individual phase folders or files with a confirmation dialog that names the specific path
-- [ ] **MGMT-03**: Delete confirmation uses distinct friction levels — full delete requires more confirmation than single file
+- [x] **MGMT-01**: User can delete the entire `.planning/` directory with a confirmation dialog
+- [x] **MGMT-02**: User can delete individual phase folders or files with a confirmation dialog that names the specific path
+- [x] **MGMT-03**: Delete confirmation uses distinct friction levels — full delete requires more confirmation than single file
 
 ### Education
 
@@ -80,9 +80,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-03 | Phase 2 | Complete |
 | EDUC-01 | Phase 2 | Pending |
 | EDUC-02 | Phase 2 | Pending |
-| MGMT-01 | Phase 3 | Pending |
-| MGMT-02 | Phase 3 | Pending |
-| MGMT-03 | Phase 3 | Pending |
+| MGMT-01 | Phase 3 | Complete |
+| MGMT-02 | Phase 3 | Complete |
+| MGMT-03 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 15 total
