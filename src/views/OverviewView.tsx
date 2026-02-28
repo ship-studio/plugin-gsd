@@ -62,18 +62,17 @@ export function OverviewView({ gsd }: OverviewViewProps) {
       {gsd.planningData.map((phase, index) => {
         const isExpanded = expandedPhases.has(index);
 
-        // Status badge styles
-        let badgeStyle: React.CSSProperties;
+        let badgeClass: string;
         let badgeLabel: string;
         if (phase.status === 'complete') {
-          badgeStyle = { background: 'var(--success)', color: '#fff' };
+          badgeClass = 'gsd-badge-complete';
           badgeLabel = 'Complete';
         } else if (phase.status === 'in-progress') {
-          badgeStyle = { background: 'var(--action)', color: 'var(--action-text)' };
-          badgeLabel = 'In Progress';
+          badgeClass = 'gsd-badge-in-progress';
+          badgeLabel = 'In progress';
         } else {
-          badgeStyle = { background: 'var(--bg-tertiary)', color: 'var(--text-muted)' };
-          badgeLabel = 'Not Started';
+          badgeClass = 'gsd-badge-not-started';
+          badgeLabel = 'Not started';
         }
 
         return (
@@ -82,24 +81,20 @@ export function OverviewView({ gsd }: OverviewViewProps) {
             <div
               className="gsd-phase-row"
               onClick={() => togglePhase(index)}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', cursor: 'pointer', borderBottom: '1px solid var(--border)' }}
               role="button"
               aria-expanded={isExpanded}
             >
-              <span
-                className={`gsd-phase-chevron${isExpanded ? ' gsd-phase-chevron-open' : ''}`}
-                style={{ flexShrink: 0, fontSize: 10, color: 'var(--text-muted)', width: 14, transition: 'transform 0.15s', transform: isExpanded ? 'rotate(90deg)' : undefined }}
-              >
+              <span className={`gsd-phase-chevron${isExpanded ? ' gsd-phase-chevron-open' : ''}`}>
                 &#9654;
               </span>
-              <span style={{ flex: 1, fontWeight: 500, fontSize: 13 }}>
-                Phase {phase.number}: {phase.name}
+              <span className="gsd-phase-name">
+                {phase.name}
               </span>
-              <span className="gsd-status-badge" style={{ ...badgeStyle, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase' as const, letterSpacing: 0.5, flexShrink: 0 }}>
+              <span className={`gsd-status-badge ${badgeClass}`}>
                 {badgeLabel}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>
-                {phase.plansComplete}/{phase.plansTotal} plans
+              <span className="gsd-phase-plans">
+                {phase.plansComplete}/{phase.plansTotal}
               </span>
             </div>
 
@@ -107,7 +102,7 @@ export function OverviewView({ gsd }: OverviewViewProps) {
             {isExpanded && (
               <div className="gsd-file-list">
                 {phase.dirName === null || phase.files.length === 0 ? (
-                  <div style={{ color: 'var(--text-muted)', fontSize: 11, padding: '4px 8px' }}>
+                  <div className="gsd-phase-plans" style={{ padding: '4px 8px' }}>
                     No files found
                   </div>
                 ) : (
@@ -120,10 +115,8 @@ export function OverviewView({ gsd }: OverviewViewProps) {
                           `.planning/phases/${phase.dirName}/${fileName}`,
                         )
                       }
-                      style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', fontSize: 12, cursor: 'pointer', borderRadius: 4, color: 'var(--text-secondary)' }}
                       role="button"
                     >
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>&#128196;</span>
                       {fileName}
                     </div>
                   ))

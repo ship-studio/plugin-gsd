@@ -1,4 +1,4 @@
-import { jsxs, jsx, Fragment } from "data:text/javascript,export const jsx=window.__SHIPSTUDIO_REACT__.createElement;export const jsxs=window.__SHIPSTUDIO_REACT__.createElement;export const Fragment=window.__SHIPSTUDIO_REACT__.Fragment;";
+import { jsxs, jsx, Fragment } from "data:text/javascript,const R=window.__SHIPSTUDIO_REACT__;function jsx(t,p,k){const{children:c,...r}=p;if(k!==undefined)r.key=k;return c!==undefined?Array.isArray(c)?R.createElement(t,r,...c):R.createElement(t,r,c):R.createElement(t,r)}export{jsx,jsx as jsxs};export const Fragment=R.Fragment;";
 import React, { useRef, useState, useCallback, useEffect } from "data:text/javascript,export default window.__SHIPSTUDIO_REACT__;export const useState=window.__SHIPSTUDIO_REACT__.useState;export const useEffect=window.__SHIPSTUDIO_REACT__.useEffect;export const useCallback=window.__SHIPSTUDIO_REACT__.useCallback;export const useMemo=window.__SHIPSTUDIO_REACT__.useMemo;export const useRef=window.__SHIPSTUDIO_REACT__.useRef;export const useContext=window.__SHIPSTUDIO_REACT__.useContext;export const createElement=window.__SHIPSTUDIO_REACT__.createElement;export const Fragment=window.__SHIPSTUDIO_REACT__.Fragment;";
 const STYLE_ID = "gsd-plugin-styles";
 const PLUGIN_CSS = `
@@ -59,15 +59,18 @@ const PLUGIN_CSS = `
 .gsd-progress-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
 
 /* Phase rows */
-.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; cursor: pointer; border-bottom: 1px solid var(--border); }
-.gsd-phase-row:hover { background: var(--bg-secondary); margin: 0 -24px; padding: 8px 24px; }
-.gsd-phase-chevron { flex-shrink: 0; font-size: 10px; color: var(--text-muted); width: 14px; transition: transform 0.15s; }
+.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 4px; cursor: pointer; border-bottom: 1px solid var(--border); border-radius: 4px; transition: background 0.1s; }
+.gsd-phase-row:hover { background: var(--bg-secondary); }
+.gsd-phase-chevron { flex-shrink: 0; font-size: 8px; color: var(--text-muted); width: 12px; transition: transform 0.15s; }
 .gsd-phase-chevron-open { transform: rotate(90deg); }
 .gsd-phase-name { flex: 1; font-weight: 500; font-size: 13px; }
 .gsd-phase-plans { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 
 /* Status badge */
-.gsd-status-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+.gsd-status-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0; }
+.gsd-badge-complete { background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success); }
+.gsd-badge-in-progress { background: color-mix(in srgb, var(--action) 15%, transparent); color: var(--action); }
+.gsd-badge-not-started { background: var(--bg-tertiary); color: var(--text-muted); }
 
 /* File list (accordion body) */
 .gsd-file-list { padding: 4px 0 4px 22px; }
@@ -82,10 +85,10 @@ const PLUGIN_CSS = `
 .gsd-file-viewer-content { font-size: 13px; line-height: 1.6; }
 
 /* Tabs */
-.gsd-tabs { display: flex; gap: 0; }
-.gsd-tab { padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--text-muted); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.15s; }
+.gsd-tabs { display: flex; gap: 2px; background: var(--bg-tertiary); border-radius: 6px; padding: 2px; }
+.gsd-tab { padding: 4px 12px; font-size: 12px; font-weight: 500; color: var(--text-muted); background: transparent; border: none; border-radius: 4px; cursor: pointer; transition: color 0.15s, background 0.15s; }
 .gsd-tab:hover { color: var(--text-secondary); }
-.gsd-tab-active { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+.gsd-tab-active { color: var(--text-primary); background: var(--bg-secondary); }
 
 /* Guide view */
 .gsd-guide-intro { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
@@ -408,17 +411,17 @@ function OverviewView({ gsd }) {
     !gsd.planningLoading && gsd.planningData.length === 0 && /* @__PURE__ */ jsx("div", { style: { color: "var(--text-muted)", fontSize: 12 }, children: "No phases found in ROADMAP.md" }),
     gsd.planningData.map((phase, index) => {
       const isExpanded = expandedPhases.has(index);
-      let badgeStyle;
+      let badgeClass;
       let badgeLabel;
       if (phase.status === "complete") {
-        badgeStyle = { background: "var(--success)", color: "#fff" };
+        badgeClass = "gsd-badge-complete";
         badgeLabel = "Complete";
       } else if (phase.status === "in-progress") {
-        badgeStyle = { background: "var(--action)", color: "var(--action-text)" };
-        badgeLabel = "In Progress";
+        badgeClass = "gsd-badge-in-progress";
+        badgeLabel = "In progress";
       } else {
-        badgeStyle = { background: "var(--bg-tertiary)", color: "var(--text-muted)" };
-        badgeLabel = "Not Started";
+        badgeClass = "gsd-badge-not-started";
+        badgeLabel = "Not started";
       }
       return /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsxs(
@@ -426,47 +429,29 @@ function OverviewView({ gsd }) {
           {
             className: "gsd-phase-row",
             onClick: () => togglePhase(index),
-            style: { display: "flex", alignItems: "center", gap: 8, padding: "8px 0", cursor: "pointer", borderBottom: "1px solid var(--border)" },
             role: "button",
             "aria-expanded": isExpanded,
             children: [
-              /* @__PURE__ */ jsx(
-                "span",
-                {
-                  className: `gsd-phase-chevron${isExpanded ? " gsd-phase-chevron-open" : ""}`,
-                  style: { flexShrink: 0, fontSize: 10, color: "var(--text-muted)", width: 14, transition: "transform 0.15s", transform: isExpanded ? "rotate(90deg)" : void 0 },
-                  children: "▶"
-                }
-              ),
-              /* @__PURE__ */ jsxs("span", { style: { flex: 1, fontWeight: 500, fontSize: 13 }, children: [
-                "Phase ",
-                phase.number,
-                ": ",
-                phase.name
-              ] }),
-              /* @__PURE__ */ jsx("span", { className: "gsd-status-badge", style: { ...badgeStyle, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 10, textTransform: "uppercase", letterSpacing: 0.5, flexShrink: 0 }, children: badgeLabel }),
-              /* @__PURE__ */ jsxs("span", { style: { fontSize: 11, color: "var(--text-muted)", flexShrink: 0 }, children: [
+              /* @__PURE__ */ jsx("span", { className: `gsd-phase-chevron${isExpanded ? " gsd-phase-chevron-open" : ""}`, children: "▶" }),
+              /* @__PURE__ */ jsx("span", { className: "gsd-phase-name", children: phase.name }),
+              /* @__PURE__ */ jsx("span", { className: `gsd-status-badge ${badgeClass}`, children: badgeLabel }),
+              /* @__PURE__ */ jsxs("span", { className: "gsd-phase-plans", children: [
                 phase.plansComplete,
                 "/",
-                phase.plansTotal,
-                " plans"
+                phase.plansTotal
               ] })
             ]
           }
         ),
-        isExpanded && /* @__PURE__ */ jsx("div", { className: "gsd-file-list", children: phase.dirName === null || phase.files.length === 0 ? /* @__PURE__ */ jsx("div", { style: { color: "var(--text-muted)", fontSize: 11, padding: "4px 8px" }, children: "No files found" }) : phase.files.map((fileName) => /* @__PURE__ */ jsxs(
+        isExpanded && /* @__PURE__ */ jsx("div", { className: "gsd-file-list", children: phase.dirName === null || phase.files.length === 0 ? /* @__PURE__ */ jsx("div", { className: "gsd-phase-plans", style: { padding: "4px 8px" }, children: "No files found" }) : phase.files.map((fileName) => /* @__PURE__ */ jsx(
           "div",
           {
             className: "gsd-file-item",
             onClick: () => void gsd.readFile(
               `.planning/phases/${phase.dirName}/${fileName}`
             ),
-            style: { display: "flex", alignItems: "center", gap: 6, padding: "4px 8px", fontSize: 12, cursor: "pointer", borderRadius: 4, color: "var(--text-secondary)" },
             role: "button",
-            children: [
-              /* @__PURE__ */ jsx("span", { style: { fontSize: 11, color: "var(--text-muted)" }, children: "📄" }),
-              fileName
-            ]
+            children: fileName
           },
           fileName
         )) })

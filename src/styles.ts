@@ -58,15 +58,18 @@ export const PLUGIN_CSS = `
 .gsd-progress-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
 
 /* Phase rows */
-.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; cursor: pointer; border-bottom: 1px solid var(--border); }
-.gsd-phase-row:hover { background: var(--bg-secondary); margin: 0 -24px; padding: 8px 24px; }
-.gsd-phase-chevron { flex-shrink: 0; font-size: 10px; color: var(--text-muted); width: 14px; transition: transform 0.15s; }
+.gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 4px; cursor: pointer; border-bottom: 1px solid var(--border); border-radius: 4px; transition: background 0.1s; }
+.gsd-phase-row:hover { background: var(--bg-secondary); }
+.gsd-phase-chevron { flex-shrink: 0; font-size: 8px; color: var(--text-muted); width: 12px; transition: transform 0.15s; }
 .gsd-phase-chevron-open { transform: rotate(90deg); }
 .gsd-phase-name { flex: 1; font-weight: 500; font-size: 13px; }
 .gsd-phase-plans { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 
 /* Status badge */
-.gsd-status-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+.gsd-status-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0; }
+.gsd-badge-complete { background: color-mix(in srgb, var(--success) 15%, transparent); color: var(--success); }
+.gsd-badge-in-progress { background: color-mix(in srgb, var(--action) 15%, transparent); color: var(--action); }
+.gsd-badge-not-started { background: var(--bg-tertiary); color: var(--text-muted); }
 
 /* File list (accordion body) */
 .gsd-file-list { padding: 4px 0 4px 22px; }
@@ -81,10 +84,10 @@ export const PLUGIN_CSS = `
 .gsd-file-viewer-content { font-size: 13px; line-height: 1.6; }
 
 /* Tabs */
-.gsd-tabs { display: flex; gap: 0; }
-.gsd-tab { padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--text-muted); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.15s; }
+.gsd-tabs { display: flex; gap: 2px; background: var(--bg-tertiary); border-radius: 6px; padding: 2px; }
+.gsd-tab { padding: 4px 12px; font-size: 12px; font-weight: 500; color: var(--text-muted); background: transparent; border: none; border-radius: 4px; cursor: pointer; transition: color 0.15s, background 0.15s; }
 .gsd-tab:hover { color: var(--text-secondary); }
-.gsd-tab-active { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+.gsd-tab-active { color: var(--text-primary); background: var(--bg-secondary); }
 
 /* Guide view */
 .gsd-guide-intro { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
