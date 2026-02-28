@@ -99,6 +99,68 @@ const PLUGIN_CSS = `
 .gsd-guide-command { font-family: monospace; font-size: 12px; background: var(--bg-tertiary); padding: 2px 8px; border-radius: 4px; cursor: pointer; display: inline-block; margin-bottom: 2px; border: 1px solid var(--border); }
 .gsd-guide-command:hover { background: var(--bg-secondary); border-color: var(--text-muted); }
 .gsd-guide-desc { font-size: 12px; color: var(--text-secondary); }
+
+/* Delete buttons (hover-reveal on phase rows and file items) */
+.gsd-delete-btn {
+  opacity: 0;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--error);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.gsd-phase-row:hover .gsd-delete-btn,
+.gsd-file-item:hover .gsd-delete-btn {
+  opacity: 1;
+}
+.gsd-delete-btn:hover {
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+  border-color: var(--error);
+}
+
+/* Confirm dialog (inline in modal body) */
+.gsd-confirm-dialog {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+.gsd-confirm-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.gsd-confirm-body {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.gsd-confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.gsd-btn-danger {
+  background: var(--error);
+  color: white;
+}
+.gsd-btn-danger:hover { opacity: 0.85; }
+.gsd-btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Delete all button (bottom of overview) */
+.gsd-delete-all-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
 `;
 const _w = window;
 function usePluginContext() {
@@ -332,6 +394,44 @@ function useGsd() {
     setActiveFile(null);
     setFileContent(null);
   }, []);
+  const deleteDirectory = useCallback(async () => {
+    if (project === null) return;
+    try {
+      const result = await shellRef.current.exec(
+        "bash",
+        ["-c", `rm -rf "${project.path}/.planning"`]
+      );
+      if (result.exit_code !== 0) {
+        actionsRef.current.showToast("Failed to delete .planning/ directory", "error");
+        return;
+      }
+      actionsRef.current.showToast("Deleted .planning/ directory", "success");
+      await detect();
+    } catch {
+      actionsRef.current.showToast("Failed to delete .planning/ directory", "error");
+    }
+  }, [project, detect]);
+  const deleteItem = useCallback(async (relativePath) => {
+    if (project === null) return;
+    if (!relativePath.startsWith(".planning/")) {
+      actionsRef.current.showToast("Invalid path", "error");
+      return;
+    }
+    try {
+      const result = await shellRef.current.exec(
+        "bash",
+        ["-c", `rm -rf "${project.path}/${relativePath}"`]
+      );
+      if (result.exit_code !== 0) {
+        actionsRef.current.showToast(`Failed to delete ${relativePath}`, "error");
+        return;
+      }
+      actionsRef.current.showToast(`Deleted ${relativePath}`, "success");
+      await loadPlanning();
+    } catch {
+      actionsRef.current.showToast(`Failed to delete ${relativePath}`, "error");
+    }
+  }, [project, loadPlanning]);
   return {
     // Phase 1
     phase,
@@ -349,7 +449,10 @@ function useGsd() {
     readFile,
     clearFileView,
     // Phase 2: toast passthrough
-    showToast: actionsRef.current.showToast
+    showToast: actionsRef.current.showToast,
+    // Phase 3: delete actions
+    deleteDirectory,
+    deleteItem
   };
 }
 function InstallView({ gsd }) {
