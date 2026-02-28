@@ -50,12 +50,38 @@ export interface PluginContextValue {
   };
 }
 
-// Return type of useGsd() hook (Phase 1 subset).
-// Phase 2 will extend this with planning data and file reading.
+// Phase data entry parsed from ROADMAP.md and enriched by filesystem scan.
+export interface PhaseData {
+  number: number;          // e.g., 1 from "Phase 1" or 2.1 from "Phase 2.1"
+  name: string;            // e.g., "Scaffold, Detection & Install"
+  status: 'complete' | 'in-progress' | 'not-started';
+  plansComplete: number;
+  plansTotal: number;
+  dirName: string | null;  // e.g., "01-scaffold-detection-install" (matched from filesystem)
+  files: string[];         // e.g., ["01-01-PLAN.md", "01-RESEARCH.md"]
+}
+
+// Return type of useGsd() hook.
+// Phase 1 fields are preserved unchanged; Phase 2 extends with planning data and file reading.
 export interface UseGsdReturn {
+  // Phase 1 (unchanged)
   phase: PluginPhase;
   loading: boolean;
   error: string | null;
   install: () => Promise<void>;
   redetect: () => Promise<void>;
+
+  // Phase 2: planning data
+  planningData: PhaseData[];
+  planningLoading: boolean;
+
+  // Phase 2: file viewing
+  activeFile: string | null;     // relative path of file being viewed
+  fileContent: string | null;    // raw content of activeFile
+  fileLoading: boolean;
+  readFile: (relativePath: string) => Promise<void>;
+  clearFileView: () => void;
+
+  // Phase 2: toast passthrough (for views that need it)
+  showToast: (message: string, type?: 'success' | 'error') => void;
 }
