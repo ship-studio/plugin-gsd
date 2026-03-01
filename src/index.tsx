@@ -61,14 +61,10 @@ function ToolbarButton() {
   const gsd = useGsd();
   useInjectStyles();
 
-  // Smart default: set tab on every modal open, then redetect state
+  // Reset to dashboard tab on every modal open, then redetect state
   useEffect(() => {
     if (modalOpen) {
-      setActiveTab(
-        gsd.phase === 'gsd-not-installed' || gsd.phase === 'no-project'
-          ? 'guide'
-          : 'dashboard'
-      );
+      setActiveTab('dashboard');
       void gsd.redetect();
     }
   }, [modalOpen]); // eslint-disable-line react-hooks/exhaustive-deps

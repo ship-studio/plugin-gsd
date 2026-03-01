@@ -1128,9 +1128,7 @@ function ToolbarButton() {
   useInjectStyles();
   useEffect(() => {
     if (modalOpen) {
-      setActiveTab(
-        gsd.phase === "gsd-not-installed" || gsd.phase === "no-project" ? "guide" : "dashboard"
-      );
+      setActiveTab("dashboard");
       void gsd.redetect();
     }
   }, [modalOpen]);
