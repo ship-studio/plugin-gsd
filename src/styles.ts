@@ -60,8 +60,8 @@ export const PLUGIN_CSS = `
 /* Phase rows */
 .gsd-phase-row { display: flex; align-items: center; gap: 8px; padding: 8px 8px; cursor: pointer; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; transition: background 0.1s; }
 .gsd-phase-row:hover { background: var(--bg-secondary); }
-.gsd-phase-chevron { flex-shrink: 0; font-size: 8px; color: var(--text-muted); width: 12px; transition: transform 0.15s; }
-.gsd-phase-chevron-open { transform: rotate(90deg); }
+.gsd-phase-chevron { flex-shrink: 0; width: 6px; height: 6px; border-right: 1.5px solid var(--text-muted); border-bottom: 1.5px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.15s; margin-left: 2px; }
+.gsd-phase-chevron-open { transform: rotate(45deg); }
 .gsd-phase-name { flex: 1; font-weight: 500; font-size: 13px; }
 .gsd-phase-plans { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
 
@@ -158,6 +158,6 @@ export const PLUGIN_CSS = `
   padding-top: 16px;
   border-top: 1px solid var(--border);
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 `;

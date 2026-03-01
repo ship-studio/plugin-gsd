@@ -115,17 +115,9 @@ export function OverviewView({ gsd }: OverviewViewProps) {
               role="button"
               aria-expanded={isExpanded}
             >
-              <span className={`gsd-phase-chevron${isExpanded ? ' gsd-phase-chevron-open' : ''}`}>
-                &#9654;
-              </span>
+              <span className={`gsd-phase-chevron${isExpanded ? ' gsd-phase-chevron-open' : ''}`} />
               <span className="gsd-phase-name">
                 {phase.name}
-              </span>
-              <span className={`gsd-status-badge ${badgeClass}`}>
-                {badgeLabel}
-              </span>
-              <span className="gsd-phase-plans">
-                {phase.plansComplete}/{phase.plansTotal}
               </span>
               {phase.dirName !== null && (
                 <button
@@ -144,6 +136,12 @@ export function OverviewView({ gsd }: OverviewViewProps) {
                   Delete
                 </button>
               )}
+              <span className={`gsd-status-badge ${badgeClass}`}>
+                {badgeLabel}
+              </span>
+              <span className="gsd-phase-plans">
+                {phase.plansComplete}/{phase.plansTotal}
+              </span>
             </div>
 
             {/* Accordion body — file list */}
