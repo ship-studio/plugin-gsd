@@ -5,7 +5,7 @@
   "description": "Manage Get Shit Done plans from within Ship Studio",
   "slots": ["toolbar"],
   "author": "Julian Galluzzo",
-  "repository": "https://github.com/juliangalluzzo/plugin-gsd",
+  "repository": "https://github.com/ship-studio/plugin-gsd",
   "min_app_version": "0.3.53",
   "icon": "",
   "required_commands": [],
