@@ -455,7 +455,7 @@ function useGsd() {
     deleteItem
   };
 }
-function InstallView({ gsd }) {
+function InstallView({ gsd, onInstallStart }) {
   return /* @__PURE__ */ jsxs("div", { children: [
     /* @__PURE__ */ jsx("h3", { children: "GSD Not Installed" }),
     /* @__PURE__ */ jsx("p", { style: { color: "var(--text-secondary)", marginBottom: 16, fontSize: 13 }, children: "Get Shit Done (GSD) is a planning system for Claude Code projects. Install it to start managing your project plans from Ship Studio." }),
@@ -463,7 +463,10 @@ function InstallView({ gsd }) {
       "button",
       {
         className: "gsd-btn gsd-btn-primary",
-        onClick: () => void gsd.install(),
+        onClick: () => {
+          onInstallStart == null ? void 0 : onInstallStart();
+          void gsd.install();
+        },
         disabled: gsd.loading,
         children: gsd.loading ? "Installing..." : "Install GSD"
       }
@@ -1069,14 +1072,14 @@ function useInjectStyles() {
     };
   }, []);
 }
-function renderDashboardContent(gsd) {
+function renderDashboardContent(gsd, onCloseModal) {
   switch (gsd.phase) {
     case "loading":
       return /* @__PURE__ */ jsx("div", { className: "gsd-loading-indicator", children: "Checking GSD status..." });
     case "no-project":
       return /* @__PURE__ */ jsx(NoProjectView, {});
     case "gsd-not-installed":
-      return /* @__PURE__ */ jsx(InstallView, { gsd });
+      return /* @__PURE__ */ jsx(InstallView, { gsd, onInstallStart: onCloseModal });
     case "no-planning":
       return /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx("h3", { children: "No Planning Directory" }),
@@ -1149,7 +1152,7 @@ function ToolbarButton() {
         ] }),
         /* @__PURE__ */ jsx("button", { className: "gsd-btn gsd-btn-secondary", onClick: () => setModalOpen(false), children: "Close" })
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "gsd-modal-body", children: activeTab === "guide" ? /* @__PURE__ */ jsx(GuideView, { showToast: gsd.showToast }) : gsd.activeFile || gsd.fileLoading ? /* @__PURE__ */ jsx(FileViewer, { gsd }) : renderDashboardContent(gsd) })
+      /* @__PURE__ */ jsx("div", { className: "gsd-modal-body", children: activeTab === "guide" ? /* @__PURE__ */ jsx(GuideView, { showToast: gsd.showToast }) : gsd.activeFile || gsd.fileLoading ? /* @__PURE__ */ jsx(FileViewer, { gsd }) : renderDashboardContent(gsd, () => setModalOpen(false)) })
     ] }) })
   ] });
 }

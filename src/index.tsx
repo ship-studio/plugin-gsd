@@ -30,14 +30,14 @@ function useInjectStyles() {
  * Renders the dashboard content based on the current plugin phase.
  * Called when the Dashboard tab is active and no file is being viewed.
  */
-function renderDashboardContent(gsd: UseGsdReturn): React.ReactNode {
+function renderDashboardContent(gsd: UseGsdReturn, onCloseModal: () => void): React.ReactNode {
   switch (gsd.phase) {
     case 'loading':
       return <div className="gsd-loading-indicator">Checking GSD status...</div>;
     case 'no-project':
       return <NoProjectView />;
     case 'gsd-not-installed':
-      return <InstallView gsd={gsd} />;
+      return <InstallView gsd={gsd} onInstallStart={onCloseModal} />;
     case 'no-planning':
       return (
         <div>
@@ -124,7 +124,7 @@ function ToolbarButton() {
                 ? <GuideView showToast={gsd.showToast} />
                 : (gsd.activeFile || gsd.fileLoading)
                   ? <FileViewer gsd={gsd} />
-                  : renderDashboardContent(gsd)
+                  : renderDashboardContent(gsd, () => setModalOpen(false))
               }
             </div>
           </div>

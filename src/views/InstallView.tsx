@@ -2,9 +2,10 @@ import type { UseGsdReturn } from '../types';
 
 interface InstallViewProps {
   gsd: UseGsdReturn;
+  onInstallStart?: () => void;
 }
 
-export function InstallView({ gsd }: InstallViewProps) {
+export function InstallView({ gsd, onInstallStart }: InstallViewProps) {
   return (
     <div>
       <h3>GSD Not Installed</h3>
@@ -14,7 +15,10 @@ export function InstallView({ gsd }: InstallViewProps) {
       </p>
       <button
         className="gsd-btn gsd-btn-primary"
-        onClick={() => void gsd.install()}
+        onClick={() => {
+          onInstallStart?.();
+          void gsd.install();
+        }}
         disabled={gsd.loading}
       >
         {gsd.loading ? 'Installing...' : 'Install GSD'}
