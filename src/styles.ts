@@ -160,4 +160,23 @@ export const PLUGIN_CSS = `
   display: flex;
   justify-content: flex-start;
 }
+
+/* Install success modal */
+.gsd-install-success-modal {
+  width: 380px;
+  max-height: none;
+}
+.gsd-install-success-modal .gsd-modal-body h3 {
+  margin: 0;
+}
+.gsd-install-command {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 14px;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
 `;

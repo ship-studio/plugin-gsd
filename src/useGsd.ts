@@ -32,6 +32,7 @@ export function useGsd(): UseGsdReturn {
   const [phase,   setPhase]   = useState<PluginPhase>('loading');
   const [loading, setLoading] = useState<boolean>(true);
   const [error,   setError]   = useState<string | null>(null);
+  const [installSuccess, setInstallSuccess] = useState<boolean>(false);
 
   // Phase 2: planning data state
   const [planningData,    setPlanningData]    = useState<PhaseData[]>([]);
@@ -211,7 +212,7 @@ export function useGsd(): UseGsdReturn {
       );
 
       if (postCheck.stdout.trim() === 'yes') {
-        actionsRef.current.showToast('GSD installed successfully!', 'success');
+        setInstallSuccess(true);
         await detect();
       } else {
         actionsRef.current.showToast('GSD installation was not completed', 'error');
@@ -331,6 +332,8 @@ export function useGsd(): UseGsdReturn {
     error,
     install,
     redetect: detect,
+    installSuccess,
+    dismissInstallSuccess: () => setInstallSuccess(false),
     // Phase 2: planning data
     planningData,
     planningLoading,

@@ -130,6 +130,32 @@ function ToolbarButton() {
           </div>
         </div>
       )}
+      {gsd.installSuccess && (
+        <div className="gsd-modal-overlay" onClick={() => gsd.dismissInstallSuccess()}>
+          <div className="gsd-modal gsd-install-success-modal" onClick={e => e.stopPropagation()}>
+            <div className="gsd-modal-body" style={{ textAlign: 'center', padding: '32px 24px' }}>
+              <div style={{ fontSize: 40, marginBottom: 16 }}>&#10003;</div>
+              <h3 style={{ marginBottom: 8 }}>You've just installed GSD!</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 20 }}>
+                To start using it, open a new terminal window and type:
+              </p>
+              <code className="gsd-install-command">/gsd:new-project</code>
+              <div style={{ marginTop: 24 }}>
+                <button
+                  className="gsd-btn gsd-btn-primary"
+                  onClick={() => {
+                    void navigator.clipboard.writeText('/gsd:new-project');
+                    gsd.showToast('Copied to clipboard!', 'success');
+                    gsd.dismissInstallSuccess();
+                  }}
+                >
+                  Copy &amp; Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

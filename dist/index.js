@@ -161,6 +161,25 @@ const PLUGIN_CSS = `
   display: flex;
   justify-content: flex-start;
 }
+
+/* Install success modal */
+.gsd-install-success-modal {
+  width: 380px;
+  max-height: none;
+}
+.gsd-install-success-modal .gsd-modal-body h3 {
+  margin: 0;
+}
+.gsd-install-command {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 14px;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
 `;
 const _w = window;
 function usePluginContext() {
@@ -246,6 +265,7 @@ function useGsd() {
   const [phase, setPhase] = useState("loading");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [installSuccess, setInstallSuccess] = useState(false);
   const [planningData, setPlanningData] = useState([]);
   const [planningLoading, setPlanningLoading] = useState(false);
   const [activeFile, setActiveFile] = useState(null);
@@ -348,7 +368,7 @@ function useGsd() {
         ["-c", 'test -d "$HOME/.claude/get-shit-done" && echo yes || echo no']
       );
       if (postCheck.stdout.trim() === "yes") {
-        actionsRef.current.showToast("GSD installed successfully!", "success");
+        setInstallSuccess(true);
         await detect();
       } else {
         actionsRef.current.showToast("GSD installation was not completed", "error");
@@ -439,6 +459,8 @@ function useGsd() {
     error,
     install,
     redetect: detect,
+    installSuccess,
+    dismissInstallSuccess: () => setInstallSuccess(false),
     // Phase 2: planning data
     planningData,
     planningLoading,
@@ -1153,7 +1175,25 @@ function ToolbarButton() {
         /* @__PURE__ */ jsx("button", { className: "gsd-btn gsd-btn-secondary", onClick: () => setModalOpen(false), children: "Close" })
       ] }),
       /* @__PURE__ */ jsx("div", { className: "gsd-modal-body", children: activeTab === "guide" ? /* @__PURE__ */ jsx(GuideView, { showToast: gsd.showToast }) : gsd.activeFile || gsd.fileLoading ? /* @__PURE__ */ jsx(FileViewer, { gsd }) : renderDashboardContent(gsd, () => setModalOpen(false)) })
-    ] }) })
+    ] }) }),
+    gsd.installSuccess && /* @__PURE__ */ jsx("div", { className: "gsd-modal-overlay", onClick: () => gsd.dismissInstallSuccess(), children: /* @__PURE__ */ jsx("div", { className: "gsd-modal gsd-install-success-modal", onClick: (e) => e.stopPropagation(), children: /* @__PURE__ */ jsxs("div", { className: "gsd-modal-body", style: { textAlign: "center", padding: "32px 24px" }, children: [
+      /* @__PURE__ */ jsx("div", { style: { fontSize: 40, marginBottom: 16 }, children: "✓" }),
+      /* @__PURE__ */ jsx("h3", { style: { marginBottom: 8 }, children: "You've just installed GSD!" }),
+      /* @__PURE__ */ jsx("p", { style: { color: "var(--text-secondary)", fontSize: 13, marginBottom: 20 }, children: "To start using it, open a new terminal window and type:" }),
+      /* @__PURE__ */ jsx("code", { className: "gsd-install-command", children: "/gsd:new-project" }),
+      /* @__PURE__ */ jsx("div", { style: { marginTop: 24 }, children: /* @__PURE__ */ jsx(
+        "button",
+        {
+          className: "gsd-btn gsd-btn-primary",
+          onClick: () => {
+            void navigator.clipboard.writeText("/gsd:new-project");
+            gsd.showToast("Copied to clipboard!", "success");
+            gsd.dismissInstallSuccess();
+          },
+          children: "Copy & Close"
+        }
+      ) })
+    ] }) }) })
   ] });
 }
 const name = "GSD";

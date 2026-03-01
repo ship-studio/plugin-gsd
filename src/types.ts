@@ -70,6 +70,8 @@ export interface UseGsdReturn {
   error: string | null;
   install: () => Promise<void>;
   redetect: () => Promise<void>;
+  installSuccess: boolean;
+  dismissInstallSuccess: () => void;
 
   // Phase 2: planning data
   planningData: PhaseData[];
