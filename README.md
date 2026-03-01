@@ -1,6 +1,8 @@
 # GSD
 
-A [Ship Studio](https://shipstudio.dev) plugin that makes [Get Shit Done](https://github.com/get-shit-done-cc/get-shit-done-cc) accessible to people who'd never touch a CLI — install GSD, view project plans, and manage your `.planning/` directory, all from within Ship Studio.
+A [Ship Studio](https://shipstudio.dev) plugin for [Get Shit Done](https://github.com/gsd-build/get-shit-done) — install GSD, view project plans, and manage your `.planning/` directory, all from within Ship Studio.
+
+[GSD](https://github.com/gsd-build/get-shit-done) is a spec-driven development system for Claude Code by [TACHES](https://github.com/gsd-build). This plugin gives it a visual interface so you can browse and manage your plans without touching the CLI.
 
 ## Features
 
@@ -92,6 +94,11 @@ plugin-gsd/
 ├── tsconfig.json
 └── vite.config.ts         # build config with Ship Studio React shims
 ```
+
+## Credits
+
+- [Get Shit Done](https://github.com/gsd-build/get-shit-done) by [TACHES](https://github.com/gsd-build) — the spec-driven development system this plugin is built for
+- [plugin-starter](https://github.com/ship-studio/plugin-starter) — Ship Studio's plugin template
 
 ## License
 
